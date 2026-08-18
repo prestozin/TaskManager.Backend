@@ -22,11 +22,23 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerConfiguration();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Angular", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 
 TypeAdapterConfig.GlobalSettings.Scan(typeof(TaskMapping).Assembly);
 
 var app = builder.Build();
+
+app.UseCors("Angular");
 
 app.UseAuthentication();
 app.UseAuthorization();

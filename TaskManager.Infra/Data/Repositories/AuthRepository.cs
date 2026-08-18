@@ -5,10 +5,10 @@ using System.ComponentModel;
 
 namespace TaskManager.Infra.Data.Repositories;
 
-public class UserRepository : IUserRepository
+public class AuthRepository : IAuthRepository
 {
     private readonly ApplicationDbContext _context;
-    public UserRepository(ApplicationDbContext context)
+    public AuthRepository(ApplicationDbContext context)
     {
         _context = context;
     }

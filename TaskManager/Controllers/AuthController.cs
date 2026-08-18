@@ -6,20 +6,20 @@ namespace TaskManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+public class AuthController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
-    public UserController(IUserService userService)
+    public AuthController(IAuthService authService)
     {
-        _userService = userService;
+        _authService = authService;
     }
 
 
     [HttpPost("Register")]
     public async Task<IActionResult> Register(CreateUserDto dto)
     {
-       var result = await _userService.RegisterAsync(dto);
+       var result = await _authService.RegisterAsync(dto);
 
         if(!result.IsSuccess)
             return NotFound(result);
@@ -30,7 +30,7 @@ public class UserController : ControllerBase
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
     {
-        var result = await _userService.LoginAsync(dto);
+        var result = await _authService.LoginAsync(dto);
 
         if (!result.IsSuccess)
             return NotFound(result);

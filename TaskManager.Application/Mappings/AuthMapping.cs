@@ -3,7 +3,7 @@ using TaskManager.Core.Entities;
 using Mapster;
 namespace TaskManager.Application.Mappings;
 
-public class UserMapping 
+public class AuthMapping 
 {
     public void RegisterMapping(TypeAdapterConfig config)
     {

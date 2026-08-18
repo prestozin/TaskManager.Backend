@@ -8,13 +8,13 @@ using TaskManager.Core.Entities;
 using TaskManager.Core.Interfaces;
 
 namespace TaskManager.Application.Services;
-public class UserService : IUserService
+public class AuthService : IAuthService
 {   
-    private readonly IUserRepository _userRepository;
+    private readonly IAuthRepository _authRepository;
     private readonly IJwtService _jwtService;
-    public UserService(IUserRepository userRepository, IJwtService jwtService)
+    public AuthService(IAuthRepository authRepository, IJwtService jwtService)
     {
-        _userRepository = userRepository;
+        _authRepository = authRepository;
         _jwtService = jwtService;
     }
     public async Task<ResultDto<CreateUserDto>> RegisterAsync(CreateUserDto userRegisterDto)
@@ -26,7 +26,7 @@ public class UserService : IUserService
         if (!validationResult.IsValid)
             return ResultDto<CreateUserDto>.ValidationFailure(validationResult.Errors);
 
-        bool exists = await _userRepository.ExistsAsync(userRegisterDto.Email);
+        bool exists = await _authRepository.ExistsAsync(userRegisterDto.Email);
 
         if (exists)
             return ResultDto<CreateUserDto>.Failure(string.Format(Messages.UserAlreadyExists));
@@ -37,13 +37,13 @@ public class UserService : IUserService
         newUser.CreatedAt = DateTime.UtcNow;
         newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
 
-        await _userRepository.AddAsync(newUser);
+        await _authRepository.AddAsync(newUser);
         return ResultDto<CreateUserDto>.Success(string.Format(Messages.UserCreatedSucessfully));
     }
 
     public async Task<ResultDto<LoginResponseDto>> LoginAsync(UserLoginDto userLoginDto)
     {
-        User? user = await _userRepository.GetByEmailAsync(userLoginDto.Email);
+        User? user = await _authRepository.GetByEmailAsync(userLoginDto.Email);
 
         if (user == null)
             return ResultDto<LoginResponseDto>.Failure(Messages.UserNotFound);

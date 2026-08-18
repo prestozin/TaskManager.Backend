@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
     {
 
         services.AddScoped<ITaskRepository, TaskRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAuthRepository, AuthRepository>();
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {
