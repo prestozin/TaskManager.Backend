@@ -19,7 +19,7 @@ public class TaskService : ITaskService
     }
     public async Task<ResultDto<List<TaskResponseDto>>> GetTasksByTitle(string title, Guid userId)
     {
-        List<TaskItem> tasks = await _taskRepository.GetTaskByTitle(title, userId);
+        List<TaskEntity> tasks = await _taskRepository.GetTaskByTitle(title, userId);
 
         if (tasks.Count == 0)
             return ResultDto<List<TaskResponseDto>>.Failure(string.Format(Messages.TaskNotFound));
@@ -34,7 +34,7 @@ public class TaskService : ITaskService
         if (taskId == Guid.Empty || userId == Guid.Empty)
             return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskFetchFailed));
 
-        TaskItem task = await _taskRepository.GetTaskById(taskId, userId);
+        TaskEntity task = await _taskRepository.GetTaskById(taskId, userId);
 
         if (task == null)
             return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskNotFound));
@@ -61,23 +61,23 @@ public class TaskService : ITaskService
         return ResultDto<PagedResultDto<TaskResponseDto>>.Success(pagedResult);
     }
 
-    public async Task<ResultDto<TaskItem>> AddTaskAsync(CreateTaskDto task, Guid userId)
+    public async Task<ResultDto<TaskEntity>> AddTaskAsync(CreateTaskDto task, Guid userId)
     {
         if (task == null || userId == Guid.Empty)
-            return ResultDto<TaskItem>.Failure(string.Format(Messages.TaskCreationFailed));
+            return ResultDto<TaskEntity>.Failure(string.Format(Messages.TaskCreationFailed));
 
         CreateTaskValidator validator = new CreateTaskValidator();
 
         var validationResult = await validator.ValidateAsync(task);
 
         if (!validationResult.IsValid)
-            return ResultDto<TaskItem>.ValidationFailure(validationResult.Errors);
+            return ResultDto<TaskEntity>.ValidationFailure(validationResult.Errors);
 
-        TaskItem newTask = task.Adapt<TaskItem>();
+        TaskEntity newTask = task.Adapt<TaskEntity>();
         newTask.UserId = userId;
 
         await _taskRepository.AddTaskAsync(newTask);
-        return ResultDto<TaskItem>.Success(string.Format(Messages.TaskCreatedSuccessfully));
+        return ResultDto<TaskEntity>.Success(string.Format(Messages.TaskCreatedSuccessfully));
     }
     public async Task<ResultDto<TaskResponseDto>> EditTaskAsync(EditTaskDto dto, Guid userId)
     {
@@ -91,7 +91,7 @@ public class TaskService : ITaskService
         if (!validationResult.IsValid)
             return ResultDto<TaskResponseDto>.ValidationFailure(validationResult.Errors);
 
-        TaskItem task = await _taskRepository.GetTaskById(dto.Id, userId);
+        TaskEntity task = await _taskRepository.GetTaskById(dto.Id, userId);
 
         if (task == null)
             return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskNotFound));
@@ -110,7 +110,7 @@ public class TaskService : ITaskService
         if (taskId == Guid.Empty || userId == Guid.Empty)
             return ResultDto<string>.Failure(string.Format(Messages.TaskDeletionFailed));
 
-        TaskItem task = await _taskRepository.GetTaskById(taskId, userId);
+        TaskEntity task = await _taskRepository.GetTaskById(taskId, userId);
 
         if (task == null)
             return ResultDto<string>.Failure(string.Format(Messages.TaskNotFound));

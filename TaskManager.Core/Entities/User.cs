@@ -7,6 +7,6 @@
         public string? Email { get; set; }
         public string HashPassword { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public ICollection<TaskItem>? Tasks { get; set; } = [];
+        public ICollection<TaskEntity>? Tasks { get; set; } = [];
     }
 }

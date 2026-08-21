@@ -10,7 +10,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IJwtService, JwtService>();
 
         return services;
     }

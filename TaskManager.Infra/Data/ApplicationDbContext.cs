@@ -5,9 +5,9 @@ namespace TaskManager.Infra.Data;
 
 public class ApplicationDbContext : DbContext
 {
-    public DbSet<TaskItem> Tasks { get; set; }
+    public DbSet<TaskEntity> Tasks { get; set; }
     public DbSet<User> Users { get; set; }
-    public DbSet<StatusTask> Status { get; set; }
+    public DbSet<Core.Entities.TaskStatus> Status { get; set; }
 
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
@@ -33,7 +33,7 @@ public class ApplicationDbContext : DbContext
                 .HasMaxLength(255);
         });
 
-        modelBuilder.Entity<TaskItem>(entity =>
+        modelBuilder.Entity<TaskEntity>(entity =>
         {
             entity.HasKey(t => t.Id);
 
@@ -48,12 +48,25 @@ public class ApplicationDbContext : DbContext
                 .WithMany(t => t.Tasks)
                 .HasForeignKey(t => t.UserId);
 
-            entity.HasOne(t => t.Status)
+            entity.HasOne(t => t.TaskStatus)
                 .WithMany()
                 .HasForeignKey(t => t.StatusId);
+
+            entity.HasOne(t => t.TaskPriority)
+                .WithMany()
+                .HasForeignKey(t => t.PriorityId);
         });
 
-        modelBuilder.Entity<StatusTask>(entity =>
+        modelBuilder.Entity<Core.Entities.TaskStatus>(entity =>
+        {
+            entity.HasKey(ts => ts.Id);
+
+            entity.Property(ts => ts.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<TaskPriority>(entity =>
         {
             entity.HasKey(ts => ts.Id);
 

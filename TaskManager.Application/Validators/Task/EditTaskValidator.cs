@@ -24,6 +24,6 @@ public class EditTaskValidator : BaseTaskValidator<EditTaskDto>
         if (!statusId.HasValue)
             return true; 
 
-        return Enum.IsDefined(typeof(EStatusTask), statusId.Value);
+        return Enum.IsDefined(typeof(ETaskStatus), statusId.Value);
     }
 }

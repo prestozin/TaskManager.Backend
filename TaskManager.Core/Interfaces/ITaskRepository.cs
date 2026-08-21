@@ -5,10 +5,10 @@ namespace TaskManager.Core.Interfaces;
 
 public interface ITaskRepository
 {
-    Task<List<TaskItem>> GetTaskByTitle(string title, Guid userId);
-    Task AddTaskAsync(TaskItem task);
-    Task<(IEnumerable<TaskItem> tasks, int totalCount)> GetAllTasks(Guid userId, PagedParamsDto pagedParams);
-    Task<TaskItem> GetTaskById(Guid? taskId, Guid userId);
-    Task EditTaskAsync(TaskItem task);
-    Task<bool> DeleteTaskAsync(TaskItem task);
+    Task<List<TaskEntity>> GetTaskByTitle(string title, Guid userId);
+    Task AddTaskAsync(TaskEntity task);
+    Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetAllTasks(Guid userId, PagedParamsDto pagedParams);
+    Task<TaskEntity> GetTaskById(Guid? taskId, Guid userId);
+    Task EditTaskAsync(TaskEntity task);
+    Task<bool> DeleteTaskAsync(TaskEntity task);
 }

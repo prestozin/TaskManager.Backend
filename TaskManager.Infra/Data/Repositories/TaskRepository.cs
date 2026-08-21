@@ -13,7 +13,7 @@ public class TaskRepository : ITaskRepository
         _context = context;
     }
 
-    public async Task<List<TaskItem>> GetTaskByTitle(string title, Guid userId)
+    public async Task<List<TaskEntity>> GetTaskByTitle(string title, Guid userId)
     {
        return await _context.Tasks
             .Where(t => t.Title != null && t.Title.Contains(title))
@@ -21,20 +21,21 @@ public class TaskRepository : ITaskRepository
             .ToListAsync();
     }
 
-    public async Task<TaskItem> GetTaskById(Guid? taskId, Guid userId)
+    public async Task<TaskEntity> GetTaskById(Guid? taskId, Guid userId)
     {
         return await _context.Tasks
-            .Include(t => t.Status)
+            .Include(t => t.TaskStatus)
+            .Include(t => t.TaskPriority)
             .SingleOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
     }
 
-    public async Task AddTaskAsync(TaskItem task)
+    public async Task AddTaskAsync(TaskEntity task)
     {
         await _context.AddAsync(task);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<(IEnumerable<TaskItem> tasks, int totalCount)> GetAllTasks(Guid userId, PagedParamsDto pagedParams)
+    public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetAllTasks(Guid userId, PagedParamsDto pagedParams)
     {
         var query = _context.Tasks
             .Where(t => t.UserId == userId);
@@ -42,7 +43,8 @@ public class TaskRepository : ITaskRepository
         int totalCount = await query.CountAsync();
 
         var tasks = await query
-            .Include(t => t.Status)
+            .Include(t => t.TaskStatus)
+            .Include(t => t.TaskPriority)
             .OrderByDescending(t => t.CreatedAt)
             .Skip((pagedParams.PageNumber - 1) * pagedParams.PageSize)
             .Take(pagedParams.PageSize)
@@ -52,13 +54,13 @@ public class TaskRepository : ITaskRepository
         return (tasks, totalCount);
     }
 
-    public async Task EditTaskAsync(TaskItem task)
+    public async Task EditTaskAsync(TaskEntity task)
     {
        _context.Update(task);
        await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteTaskAsync(TaskItem task) 
+    public async Task<bool> DeleteTaskAsync(TaskEntity task) 
     {
        var taskToDelete =  _context.Remove(task);
 
