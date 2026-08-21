@@ -59,6 +59,8 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Core.Entities.TaskStatus>(entity =>
         {
+            entity.ToTable("TaskStatus");
+
             entity.HasKey(ts => ts.Id);
 
             entity.Property(ts => ts.Name)
@@ -68,6 +70,8 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<TaskPriority>(entity =>
         {
+            entity.ToTable("TaskPriority");
+
             entity.HasKey(ts => ts.Id);
 
             entity.Property(ts => ts.Name)
