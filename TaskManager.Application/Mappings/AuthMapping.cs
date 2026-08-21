@@ -11,5 +11,7 @@ public class AuthMapping
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.HashPassword)
             .Ignore(dest => dest.CreatedAt);
+
+        config.NewConfig<User, LoginResponseDto>();
     }
 }

@@ -55,11 +55,10 @@ public class AuthService : IAuthService
 
         string userToken = _jwtService.GenerateToken(user);
 
-        var loginResponse = new LoginResponseDto
-        {
-            Token = userToken
-        };
+        LoginResponseDto response = user.Adapt<LoginResponseDto>();
 
-        return ResultDto<LoginResponseDto>.Success(loginResponse);
+        response.Token = userToken;
+
+        return ResultDto<LoginResponseDto>.Success(response);
     }
 }
