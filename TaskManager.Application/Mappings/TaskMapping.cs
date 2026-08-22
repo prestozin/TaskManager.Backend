@@ -16,8 +16,8 @@ public class TaskMapping : IRegister
         config.NewConfig<TaskEntity, TaskResponseDto>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.CreatedAt, src => src.CreatedAt.ToString("yyyy-MM-dd"))
-            .Map(dest => dest.Status, src => src.TaskStatus!.Name)
-            .Map(dest => dest.Priority, src => src.TaskPriority!.Name);
+            .Map(dest => dest.Status, src => src.TaskStatus!.Description)
+            .Map(dest => dest.Priority, src => src.TaskPriority!.Description);
 
         config.NewConfig<EditTaskDto, TaskEntity>()
            .Ignore(dest => dest.CreatedAt)

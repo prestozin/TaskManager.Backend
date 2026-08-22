@@ -2,45 +2,47 @@
 
 public static class Messages
 {
-    public const string TaskNotFound = "Nenhuma tarefa encontrada";
-    public const string TaskFetchFailed = "Falha ao buscar tarefa";
+    public const string TASK_TITLE_REQUIRED = "O título da tarefa é obrigatório.";
+    public const string TASK_TITLE_LENGTH = "O título deve ter entre 3 50 caracteres.";
 
-    public const string TaskCreatedSuccessfully = "Tarefa criada com sucesso";
-    public const string TaskCreationFailed = "Falha ao criar tarefa";
+    public const string TASK_DESCRIPTION_MAX_LENGTH = "A descrição não pode exceder 500 caracteres.";
 
-    public const string TaskUpdatedSuccessfully = "Tarefa atualizada com sucesso";
-    public const string TaskUpdateFailed = "Falha ao atualizar tarefa";
+    public const string TASK_ID_REQUIRED = "O Id da tarefa é obrigatório.";
+    public const string TASK_STATUS_INVALID = "O status informado é inválido.";
+    public const string TASK_PRIORITY_INVALID = "A prioridade informada é inválido.";
 
-    public const string TaskDeletedSuccessfully = "Tarefa deletada com sucesso";
-    public const string TaskDeletionFailed = "Falha ao deletar tarefa";
+    public const string TASK_NOT_FOUND = "Nenhuma tarefa encontrada";
+    public const string TASK_FETCH_FAILED = "Falha ao buscar tarefa";
 
-    public const string TaskAlreadyExists = "Tarefa já existe";
+    public const string TASK_CREATED_SUCCESSFULLY = "Tarefa criada com sucesso";
+    public const string TASK_CREATION_FAILED = "Falha ao criar tarefa";
 
-    public const string UserNotFound = "Usuário não encontrado";
-    public const string UserAlreadyExists = "Usuário já cadastrado";
+    public const string TASK_UPDATED_SUCCESSFULLY = "Tarefa atualizada com sucesso";
+    public const string TASK_UPDATE_FAILED = "Falha ao atualizar tarefa";
 
-    public const string UserCreatedSucessfully = "Usuário criado com sucesso";
-    public const string UserCreationFailed = "Falha ao criar usuário";
+    public const string TASK_DELETED_SUCCESSFULLY = "Tarefa deletada com sucesso";
+    public const string TASK_DELETION_FAILED = "Falha ao deletar tarefa";
 
-    public const string UserOrPasswordInvalid = "Usuário ou senha inválido.";
+    public const string TASK_ALREADY_EXISTS = "Tarefa já existe";
 
-    public const string EmailRequired = "O e-mail é obrigatório.";
-    public const string PasswordRequired = "A senha é obrigatória.";
+    public const string USER_NOT_FOUND = "Usuário não encontrado";
+    public const string USER_ALREADY_EXISTS = "Usuário já cadastrado";
 
-    public const string EmailInvalid = "Email inválido";
-    public const string EmailMaxLength = "O e-mail não pode exceder {0} caracteres.";
+    public const string USER_CREATED_SUCCESSFULLY = "Usuário criado com sucesso";
+    public const string USER_CREATION_FAILED = "Falha ao criar usuário";
 
-    public const string NameRequired = "O nome é obrigatório.";
-    public const string NameLength = "O nome deve ter entre 3 e 100 caracteres.";
+    public const string USER_OR_PASSWORD_INVALID = "Usuário ou senha inválido.";
 
-    public const string PasswordRules = "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.";
+    public const string EMAIL_REQUIRED = "O e-mail é obrigatório.";
+    public const string PASSWORD_REQUIRED = "A senha é obrigatória.";
 
-    public const string TaskTitleRequired = "O título da tarefa é obrigatório.";
-    public const string TaskTitleLength = "O título deve ter entre 3 e 100 caracteres.";
+    public const string EMAIL_INVALID = "Email inválido";
+    public const string EMAIL_MAX_LENGTH = "O e-mail não pode exceder {0} caracteres.";
 
-    public const string TaskDescriptionMaxLength = "A descrição não pode exceder 500 caracteres.";
+    public const string NAME_REQUIRED = "O nome é obrigatório.";
+    public const string NAME_LENGTH = "O nome deve ter entre 3 e 100 caracteres.";
 
-    public const string TaskIdRequired = "O Id da tarefa é obrigatório.";
+    public const string PASSWORD_RULES = "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.";
 
-    public const string TaskStatusInvalid = "O status informado é inválido.";
+    public const string LOGIN_SUCCESSFULLY = "Login realizado com sucesso!";
 }

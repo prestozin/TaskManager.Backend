@@ -22,7 +22,7 @@ public class TaskService : ITaskService
         List<TaskEntity> tasks = await _taskRepository.GetTaskByTitle(title, userId);
 
         if (tasks.Count == 0)
-            return ResultDto<List<TaskResponseDto>>.Failure(string.Format(Messages.TaskNotFound));
+            return ResultDto<List<TaskResponseDto>>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
         List<TaskResponseDto> listOfTasks = tasks.Adapt<List<TaskResponseDto>>();
 
@@ -32,12 +32,12 @@ public class TaskService : ITaskService
     public async Task<ResultDto<TaskResponseDto>> GetTaskById(Guid taskId, Guid userId)
     {
         if (taskId == Guid.Empty || userId == Guid.Empty)
-            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskFetchFailed));
+            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_FETCH_FAILED));
 
         TaskEntity task = await _taskRepository.GetTaskById(taskId, userId);
 
         if (task == null)
-            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskNotFound));
+            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
         TaskResponseDto taskDto = task.Adapt<TaskResponseDto>();
 
@@ -47,14 +47,14 @@ public class TaskService : ITaskService
     public async Task<ResultDto<PagedResultDto<TaskResponseDto>>> GetAllTasks(Guid userId, PagedParamsDto pagedParams)
     {
         if (userId == Guid.Empty || pagedParams == null)
-            return ResultDto<PagedResultDto<TaskResponseDto>>.Failure(string.Format(Messages.TaskNotFound));
+            return ResultDto<PagedResultDto<TaskResponseDto>>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
         var (tasks, totalCount) = await _taskRepository.GetAllTasks(userId, pagedParams);
 
         List<TaskResponseDto> tasksDtos = tasks.Adapt<List<TaskResponseDto>>();
 
         if (tasksDtos.Count == 0)
-            return ResultDto<PagedResultDto<TaskResponseDto>>.Failure(string.Format(Messages.TaskNotFound));
+            return ResultDto<PagedResultDto<TaskResponseDto>>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
         PagedResultDto<TaskResponseDto> pagedResult = new PagedResultDto<TaskResponseDto>(tasksDtos, pagedParams.PageNumber, pagedParams.PageSize, totalCount);
 
@@ -64,7 +64,7 @@ public class TaskService : ITaskService
     public async Task<ResultDto<TaskEntity>> AddTaskAsync(CreateTaskDto task, Guid userId)
     {
         if (task == null || userId == Guid.Empty)
-            return ResultDto<TaskEntity>.Failure(string.Format(Messages.TaskCreationFailed));
+            return ResultDto<TaskEntity>.Failure(string.Format(Messages.TASK_CREATION_FAILED));
 
         CreateTaskValidator validator = new CreateTaskValidator();
 
@@ -77,12 +77,12 @@ public class TaskService : ITaskService
         newTask.UserId = userId;
 
         await _taskRepository.AddTaskAsync(newTask);
-        return ResultDto<TaskEntity>.Success(string.Format(Messages.TaskCreatedSuccessfully));
+        return ResultDto<TaskEntity>.Success(string.Format(Messages.TASK_CREATED_SUCCESSFULLY));
     }
     public async Task<ResultDto<TaskResponseDto>> EditTaskAsync(EditTaskDto dto, Guid userId)
     {
         if (dto.Id == Guid.Empty || userId == Guid.Empty)
-            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskUpdateFailed));
+            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_UPDATE_FAILED));
 
         EditTaskValidator validator = new EditTaskValidator();
 
@@ -94,7 +94,7 @@ public class TaskService : ITaskService
         TaskEntity task = await _taskRepository.GetTaskById(dto.Id, userId);
 
         if (task == null)
-            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TaskNotFound));
+            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
         dto.Adapt(task);
 
@@ -108,15 +108,15 @@ public class TaskService : ITaskService
     public async Task<ResultDto<string>> DeleteTaskAsync(Guid taskId, Guid userId)
     {
         if (taskId == Guid.Empty || userId == Guid.Empty)
-            return ResultDto<string>.Failure(string.Format(Messages.TaskDeletionFailed));
+            return ResultDto<string>.Failure(string.Format(Messages.TASK_DELETION_FAILED));
 
         TaskEntity task = await _taskRepository.GetTaskById(taskId, userId);
 
         if (task == null)
-            return ResultDto<string>.Failure(string.Format(Messages.TaskNotFound));
+            return ResultDto<string>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
         await _taskRepository.DeleteTaskAsync(task);
-        return ResultDto<string>.Success(string.Format(Messages.TaskDeletedSuccessfully));
+        return ResultDto<string>.Success(string.Format(Messages.TASK_DELETED_SUCCESSFULLY));
     }
 }
 

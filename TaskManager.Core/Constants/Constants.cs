@@ -2,18 +2,18 @@
 
 public static class Constants
 {
-    public const string EmailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-    public const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,100}$";
+    public const string EMAIL_REGEX = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+    public const string PASSWORD_REGEX = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,100}$";
 
-    public const int EmailMaxLength = 255;
+    public const int EMAIL_MAX_LENGTH = 255;
 
-    public const int NameMaxLength = 100;
-    public const int NameMinLength = 3;
+    public const int NAME_MAX_LENGTH = 100;
+    public const int NAME_MIN_LENGTH = 3;
 
-    public const int TaskDescriptionMinLength = 10;
-    public const int TaskDescriptionMaxLength = 500;
+    public const int TASK_DESCRIPTION_MIN_LENGTH = 10;
+    public const int TASK_DESCRIPTION_MAX_LENGTH = 500;
 
-    public const int TaskTitleMinLength = 3;
-    public const int TaskTitleMaxLength = 100;
+    public const int TASK_TITLE_MIN_LENGTH = 3;
+    public const int TASK_TITLE_MAX_LENGTH = 50;
 
 }

@@ -1,7 +1,7 @@
 ﻿
 namespace TaskManager.Application.DTOs;
 
-public class TaskBaseDto
+public class BaseTaskDto
 {
     public string? Title { get; set; }
     public string? Description { get; set; }

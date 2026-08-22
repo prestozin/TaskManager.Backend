@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Application.DTOs;
 
-public class EditTaskDto : TaskBaseDto
+public class EditTaskDto : BaseTaskDto
 {
     public Guid? Id { get; set; }
 }

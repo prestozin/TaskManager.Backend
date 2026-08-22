@@ -15,6 +15,8 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<User>(entity =>
         {
+            entity.ToTable("Users");
+
             entity.HasKey(u => u.Id);
 
             entity.Property(u => u.Name)
@@ -35,11 +37,13 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<TaskEntity>(entity =>
         {
+            entity.ToTable("Tasks");
+
             entity.HasKey(t => t.Id);
 
             entity.Property(t => t.Title)
                 .IsRequired()
-                .HasMaxLength(255);
+                .HasMaxLength(50);
 
             entity.Property(t => t.Description)
                 .HasMaxLength(500);
@@ -63,7 +67,7 @@ public class ApplicationDbContext : DbContext
 
             entity.HasKey(ts => ts.Id);
 
-            entity.Property(ts => ts.Name)
+            entity.Property(ts => ts.Description)
                 .IsRequired()
                 .HasMaxLength(50);
         });
@@ -74,7 +78,7 @@ public class ApplicationDbContext : DbContext
 
             entity.HasKey(ts => ts.Id);
 
-            entity.Property(ts => ts.Name)
+            entity.Property(ts => ts.Description)
                 .IsRequired()
                 .HasMaxLength(50);
         });

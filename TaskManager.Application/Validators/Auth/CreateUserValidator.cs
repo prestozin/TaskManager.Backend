@@ -10,22 +10,22 @@ public class CreateUserValidator : AbstractValidator<CreateUserDto>
     {
         RuleFor(x => x.Name)
           .NotEmpty()
-                .WithMessage(Messages.NameRequired)
-          .Length(Constants.NameMinLength, Constants.NameMaxLength)
-                .WithMessage(Messages.NameLength);
+                .WithMessage(Messages.NAME_REQUIRED)
+          .Length(Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH)
+                .WithMessage(Messages.NAME_LENGTH);
 
         RuleFor(x => x.Email)
             .NotEmpty()
-                .WithMessage(Messages.EmailRequired)
+                .WithMessage(Messages.EMAIL_REQUIRED)
             .EmailAddress()
-                .WithMessage(Messages.EmailInvalid)
-            .MaximumLength(Constants.EmailMaxLength)
-                .WithMessage(Messages.EmailMaxLength);
+                .WithMessage(Messages.EMAIL_INVALID)
+            .MaximumLength(Constants.EMAIL_MAX_LENGTH)
+                .WithMessage(Messages.EMAIL_MAX_LENGTH);
 
         RuleFor(x => x.Password)
             .NotEmpty()
-                .WithMessage(Messages.PasswordRequired)
-           .Matches(Constants.PasswordRegex)
-                .WithMessage(Messages.PasswordRules);
+                .WithMessage(Messages.PASSWORD_REQUIRED)
+           .Matches(Constants.PASSWORD_REGEX)
+                .WithMessage(Messages.PASSWORD_RULES);
     }
 }
