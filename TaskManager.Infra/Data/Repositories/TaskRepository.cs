@@ -37,36 +37,18 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
     public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetAllTasks(Guid userId, PagedParamsDto pagedParams)
     {
-        var query = _context.Tasks
-            .Where(t => t.UserId == userId);
+        var query = _context.Tasks.Where(t => t.UserId == userId);
 
         int totalCount = await query.CountAsync();
 
-        var tasks = OrderQuery(query, pagedParams).ToList();
+        var tasks = await ApplySort(query, pagedParams.Sort, pagedParams.Order)
+                            .Include(t => t.TaskStatus)
+                            .Include(t => t.TaskPriority)
+                            .Skip((pagedParams.PageNumber - 1) * pagedParams.PageSize)
+                            .Take(pagedParams.PageSize)
+                            .ToListAsync();
 
         return (tasks, totalCount);
-    }
-
- 
-
-    private IQueryable<TaskEntity> OrderQuery (IQueryable<TaskEntity> unorderedQuery ,PagedParamsDto pagedParams)
-    {
-        IQueryable<TaskEntity> query = unorderedQuery
-            .Include(t => t.TaskStatus)
-            .Include(t => t.TaskPriority);
-
-        if (pagedParams.Order == "asc") 
-        { 
-          query = query.OrderBy(p => p.CreatedAt); 
-        }     
-        else 
-        { 
-          query = query.OrderByDescending(p => p.CreatedAt); 
-        }
-        
-        return query
-            .Skip((pagedParams.PageNumber - 1) * pagedParams.PageSize)
-            .Take(pagedParams.PageSize);
     }
 
     public async Task EditTaskAsync(TaskEntity task)

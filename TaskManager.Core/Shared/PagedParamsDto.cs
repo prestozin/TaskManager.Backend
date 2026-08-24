@@ -1,4 +1,5 @@
-﻿using TaskManager.Core.Constants;
+﻿using Microsoft.VisualBasic;
+using TaskManager.Core.Constants;
 
 namespace TaskManager.Core.Shared;
 
@@ -6,8 +7,8 @@ public class PagedParamsDto
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
-    public string? Sort { get; set; }
-    public string? Order { get; set; }
+    public string? Sort { get; set; } = Constants.Constants.DEFAULT_TASK_SORT_VALUE;
+    public string? Order { get; set; } = Constants.Constants.DEFAULT_ORDER_VALUE;
 
     private bool ValidateOrder(string? order)
     {
