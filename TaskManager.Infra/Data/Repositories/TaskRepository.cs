@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager.Infra.Data.Repositories;
 
-public class TaskRepository : ITaskRepository
+public class TaskRepository : BaseRepository<Task>, ITaskRepository
 {
     private readonly ApplicationDbContext _context;
     public TaskRepository(ApplicationDbContext context)
@@ -42,16 +42,31 @@ public class TaskRepository : ITaskRepository
 
         int totalCount = await query.CountAsync();
 
-        var tasks = await query
-            .Include(t => t.TaskStatus)
-            .Include(t => t.TaskPriority)
-            .OrderByDescending(t => t.CreatedAt)
-            .Skip((pagedParams.PageNumber - 1) * pagedParams.PageSize)
-            .Take(pagedParams.PageSize)
-            .ToListAsync();
-
+        var tasks = OrderQuery(query, pagedParams).ToList();
 
         return (tasks, totalCount);
+    }
+
+ 
+
+    private IQueryable<TaskEntity> OrderQuery (IQueryable<TaskEntity> unorderedQuery ,PagedParamsDto pagedParams)
+    {
+        IQueryable<TaskEntity> query = unorderedQuery
+            .Include(t => t.TaskStatus)
+            .Include(t => t.TaskPriority);
+
+        if (pagedParams.Order == "asc") 
+        { 
+          query = query.OrderBy(p => p.CreatedAt); 
+        }     
+        else 
+        { 
+          query = query.OrderByDescending(p => p.CreatedAt); 
+        }
+        
+        return query
+            .Skip((pagedParams.PageNumber - 1) * pagedParams.PageSize)
+            .Take(pagedParams.PageSize);
     }
 
     public async Task EditTaskAsync(TaskEntity task)

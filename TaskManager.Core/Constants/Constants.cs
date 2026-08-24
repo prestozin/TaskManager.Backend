@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public static readonly string[] SORT_ACCEPTED_VALUES = new[] { "CreatedAt", "Priority", "Status" };
+    public static readonly string[] ORDER_ACCEPTED_VALUES = new[] { "asc", "desc" };
     public const string EMAIL_REGEX = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
     public const string PASSWORD_REGEX = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,100}$";
 
