@@ -46,12 +46,12 @@ public class TaskController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAllTasks([FromQuery] PagedParamsDto pagedParams)
+    [HttpGet("GetPaged")]
+    public async Task<IActionResult> GetPaged([FromQuery] TaskPagedParams pagedParams)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.GetAllTasks(userId, pagedParams);
+        var result = await _taskService.GetPaged(userId, pagedParams);
 
         if (!result.IsSuccess)
             return NotFound(result);

@@ -44,12 +44,12 @@ public class TaskService : ITaskService
         return ResultDto<TaskResponseDto>.Success(taskDto);
     }
 
-    public async Task<ResultDto<PagedResultDto<TaskResponseDto>>> GetAllTasks(Guid userId, PagedParamsDto pagedParams)
+    public async Task<ResultDto<PagedResultDto<TaskResponseDto>>> GetPaged(Guid userId, TaskPagedParams pagedParams)
     {
         if (userId == Guid.Empty || pagedParams == null)
             return ResultDto<PagedResultDto<TaskResponseDto>>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
-        var (tasks, totalCount) = await _taskRepository.GetAllTasks(userId, pagedParams);
+        var (tasks, totalCount) = await _taskRepository.GetPaged(userId, pagedParams);
 
         List<TaskResponseDto> tasksDtos = tasks.Adapt<List<TaskResponseDto>>();
 

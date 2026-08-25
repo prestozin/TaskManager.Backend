@@ -7,8 +7,8 @@ public class PagedParamsDto
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
-    public string? Sort { get; set; } = Constants.Constants.DEFAULT_TASK_SORT_VALUE;
-    public string? Order { get; set; } = Constants.Constants.DEFAULT_ORDER_VALUE;
+    public string? Sort { get; set; } 
+    public string? Order { get; set; } 
 
     private bool ValidateOrder(string? order)
     {

@@ -16,8 +16,7 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
     public async Task<List<TaskEntity>> GetTaskByTitle(string title, Guid userId)
     {
        return await _context.Tasks
-            .Where(t => t.Title != null && t.Title.Contains(title))
-            .Where(u => u.UserId == userId)
+            .Where(t => t.Title != null && t.Title.Contains(title) && t.UserId == userId)
             .ToListAsync();
     }
 
@@ -35,9 +34,14 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetAllTasks(Guid userId, PagedParamsDto pagedParams)
+    public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetPaged(Guid userId, TaskPagedParams pagedParams)
     {
         var query = _context.Tasks.Where(t => t.UserId == userId);
+
+        if (pagedParams.TaskStatusId.HasValue)
+        {
+            query = query.Where(t => t.StatusId == pagedParams.TaskStatusId);
+        }    
 
         int totalCount = await query.CountAsync();
 
