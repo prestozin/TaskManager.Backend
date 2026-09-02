@@ -40,8 +40,13 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
         if (pagedParams.TaskStatusId.HasValue)
         {
-            query = query.Where(t => t.StatusId == pagedParams.TaskStatusId);
-        }    
+            query = query.Where(t => t.StatusId == pagedParams.TaskStatusId.Value);
+        }
+
+        if (pagedParams.TaskPriorityId.HasValue)
+        {
+            query = query.Where(t => t.PriorityId == pagedParams.TaskPriorityId.Value);
+        }
 
         int totalCount = await query.CountAsync();
 
