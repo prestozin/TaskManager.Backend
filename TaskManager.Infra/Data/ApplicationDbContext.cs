@@ -68,7 +68,7 @@ public class ApplicationDbContext : DbContext
 
             entity.HasKey(ts => ts.Id);
 
-            entity.Property(ts => ts.Description)
+            entity.Property(ts => ts.Name)
                 .IsRequired()
                 .HasMaxLength(50);
         });
@@ -79,7 +79,7 @@ public class ApplicationDbContext : DbContext
 
             entity.HasKey(ts => ts.Id);
 
-            entity.Property(ts => ts.Description)
+            entity.Property(ts => ts.Name)
                 .IsRequired()
                 .HasMaxLength(50);
         });
