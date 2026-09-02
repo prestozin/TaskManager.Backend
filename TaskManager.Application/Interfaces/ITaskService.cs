@@ -1,4 +1,5 @@
 ﻿using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Task;
 using TaskManager.Core.Entities;
 using TaskManager.Core.Shared;
 
@@ -12,4 +13,5 @@ public interface ITaskService
     Task<ResultDto<PagedResultDto<TaskResponseDto>>> GetPaged(Guid userId, TaskPagedParams pagedParams);
     Task<ResultDto<TaskResponseDto>> EditTaskAsync(EditTaskDto dto, Guid userId);
     Task<ResultDto<string>> DeleteTaskAsync(Guid taskId, Guid userId);
+    Task<ResultDto<TaskSelectablesDto>> GetSelectablesAsync();
 }

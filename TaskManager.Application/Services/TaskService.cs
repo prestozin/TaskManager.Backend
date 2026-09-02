@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Mapster;
 using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Task;
 using TaskManager.Application.Interfaces;
 using TaskManager.Application.Validators;
 using TaskManager.Core.Constants;
@@ -117,6 +118,23 @@ public class TaskService : ITaskService
 
         await _taskRepository.DeleteTaskAsync(task);
         return ResultDto<string>.Success(string.Format(Messages.TASK_DELETED_SUCCESSFULLY));
+    }
+
+    public async Task<ResultDto<TaskSelectablesDto>> GetSelectablesAsync()
+    {
+        List<Core.Entities.TaskStatus> statuses = await _taskRepository.GetTaskStatusesAsync();
+        List<TaskPriority> priorities = await _taskRepository.GetTaskPrioritiesAsync();
+
+        if (statuses == null || priorities == null)
+            return ResultDto<TaskSelectablesDto>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Selectables"));
+
+        TaskSelectablesDto selectablesDto = new TaskSelectablesDto
+        {
+            Status = statuses,
+            Priority = priorities
+        };
+
+        return ResultDto<TaskSelectablesDto>.Success(selectablesDto);
     }
 }
 

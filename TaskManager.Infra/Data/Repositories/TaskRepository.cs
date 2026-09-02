@@ -69,4 +69,14 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
        return taskToDelete != null;
     }
+
+    public async Task<List<Core.Entities.TaskStatus>> GetTaskStatusesAsync()
+    {
+        return await _context.Status.ToListAsync();
+    }
+
+    public async Task<List<TaskPriority>> GetTaskPrioritiesAsync()
+    {
+        return await _context.Priorities.ToListAsync();
+    }
 }

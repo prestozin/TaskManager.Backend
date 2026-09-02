@@ -2,8 +2,9 @@
 
 public static class Messages
 {
+    public const string FIELD_NOT_FOUND = "Campo {0} não encontrado.";
     public const string TASK_TITLE_REQUIRED = "O título da tarefa é obrigatório.";
-    public const string TASK_TITLE_LENGTH = "O título deve ter entre 3 50 caracteres.";
+    public const string TASK_TITLE_LENGTH = "O título deve ter entre 3 e 50 caracteres.";
 
     public const string TASK_DESCRIPTION_MAX_LENGTH = "A descrição não pode exceder 500 caracteres.";
 

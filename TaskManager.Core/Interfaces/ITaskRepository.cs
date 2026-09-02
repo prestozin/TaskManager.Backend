@@ -11,4 +11,6 @@ public interface ITaskRepository
     Task<TaskEntity> GetTaskById(Guid? taskId, Guid userId);
     Task EditTaskAsync(TaskEntity task);
     Task<bool> DeleteTaskAsync(TaskEntity task);
+    Task<List<Entities.TaskStatus>> GetTaskStatusesAsync();
+    Task<List<TaskPriority>> GetTaskPrioritiesAsync();
 }

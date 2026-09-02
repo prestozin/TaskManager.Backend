@@ -1,6 +1,7 @@
 ﻿using TaskManager.Application.DTOs;
 using TaskManager.Core.Entities;
 using Mapster;
+using TaskManager.Application.DTOs.Task;
 namespace TaskManager.Application.Mappings;
 
 public class TaskMapping : IRegister

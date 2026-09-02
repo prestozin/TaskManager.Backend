@@ -8,6 +8,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<TaskEntity> Tasks { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Core.Entities.TaskStatus> Status { get; set; }
+    public DbSet<TaskPriority> Priorities { get; set; }
 
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
