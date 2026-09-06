@@ -62,23 +62,27 @@ public class TaskService : ITaskService
         return ResultDto<PagedResultDto<TaskResponseDto>>.Success(pagedResult);
     }
 
-    public async Task<ResultDto<TaskEntity>> AddTaskAsync(CreateTaskDto task, Guid userId)
+    public async Task<ResultDto<string>> AddTaskAsync(CreateTaskDto task, Guid userId)
+
     {
         if (task == null || userId == Guid.Empty)
-            return ResultDto<TaskEntity>.Failure(string.Format(Messages.TASK_CREATION_FAILED));
+            return ResultDto<string>.Failure(Messages.TASK_CREATION_FAILED);
 
         CreateTaskValidator validator = new CreateTaskValidator();
 
-        var validationResult = await validator.ValidateAsync(task);
+        var result = await validator.ValidateAsync(task);
 
-        if (!validationResult.IsValid)
-            return ResultDto<TaskEntity>.ValidationFailure(validationResult.Errors);
+        if (!result.IsValid)
+            return ResultDto<string>.ValidationFailure(result.Errors);
 
         TaskEntity newTask = task.Adapt<TaskEntity>();
         newTask.UserId = userId;
 
         await _taskRepository.AddTaskAsync(newTask);
-        return ResultDto<TaskEntity>.Success(string.Format(Messages.TASK_CREATED_SUCCESSFULLY));
+
+        TaskResponseDto response = newTask.Adapt<TaskResponseDto>();
+
+        return ResultDto<string>.Success(Messages.TASK_CREATED_SUCCESSFULLY);
     }
     public async Task<ResultDto<TaskResponseDto>> EditTaskAsync(EditTaskDto dto, Guid userId)
     {
