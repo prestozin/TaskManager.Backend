@@ -1,12 +1,12 @@
 services:
 
-  sqlserver:
+  database:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: TaskManager-sqlserver
+    container_name: TaskManager-database
 
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "SuaSenhaForte@123"
+      MSSQL_SA_PASSWORD: "SuaSenhaForte@123"
 
     ports:
       - "1433:1433"
@@ -14,5 +14,27 @@ services:
     volumes:
       - sqlserver_data:/var/opt/mssql
 
+  api:
+    build:
+      context: .
+      dockerfile: TaskManager/Dockerfile
+
+    container_name: TaskManager-api
+
+    ports:
+      - "7102:8080"
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: "Server=database,1433;Database=TaskManager;User Id=sa;Password=SuaSenhaForte@123;TrustServerCertificate=True"
+
+    depends_on:
+      - database
+
+
 volumes:
   sqlserver_data:
+    external: true
+    name: dailymanager_sqlserver_data
