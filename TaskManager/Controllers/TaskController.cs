@@ -88,7 +88,7 @@ public class TaskController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("DeleteTask")]
+    [HttpDelete("{taskId}")]
     public async Task<IActionResult> DeleteTask([FromRoute] Guid taskId)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
