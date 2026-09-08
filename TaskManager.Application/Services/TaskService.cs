@@ -69,11 +69,7 @@ public class TaskService : ITaskService
             return ResultDto<string>.Failure(Messages.TASK_CREATION_FAILED);
 
         CreateTaskValidator validator = new CreateTaskValidator();
-
-        var result = await validator.ValidateAsync(task);
-
-        if (!result.IsValid)
-            return ResultDto<string>.ValidationFailure(result.Errors);
+        await validator.ValidateAndThrowAsync(task);
 
         TaskEntity newTask = task.Adapt<TaskEntity>();
         newTask.UserId = userId;
@@ -90,11 +86,7 @@ public class TaskService : ITaskService
             return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_UPDATE_FAILED));
 
         EditTaskValidator validator = new EditTaskValidator();
-
-        var validationResult = await validator.ValidateAsync(dto);
-
-        if (!validationResult.IsValid)
-            return ResultDto<TaskResponseDto>.ValidationFailure(validationResult.Errors);
+        await validator.ValidateAndThrowAsync(dto);
 
         TaskEntity task = await _taskRepository.GetTaskById(dto.Id, userId);
 

@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using FluentValidation;
+using Mapster;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,11 +25,7 @@ public class AuthService : IAuthService
     public async Task<ResultDto<CreateUserDto>> RegisterAsync(CreateUserDto userRegisterDto)
     {
         CreateUserValidator validator = new CreateUserValidator();
-
-        var validationResult = await validator.ValidateAsync(userRegisterDto);
-
-        if (!validationResult.IsValid)
-            return ResultDto<CreateUserDto>.ValidationFailure(validationResult.Errors);
+        await validator.ValidateAndThrowAsync(userRegisterDto);
 
         bool exists = await _authRepository.ExistsAsync(userRegisterDto.Email);
 
