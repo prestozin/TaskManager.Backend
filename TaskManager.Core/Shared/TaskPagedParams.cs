@@ -5,6 +5,7 @@ public class TaskPagedParams : PagedParamsDto
 {
     public int? TaskStatusId { get; set; }
     public int? TaskPriorityId { get; set; }
+    public string? Search { get; set; }
     public TaskPagedParams()
     {
         Sort  = Constants.Constants.DEFAULT_TASK_SORT_VALUE;

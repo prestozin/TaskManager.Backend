@@ -38,15 +38,7 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
     {
         var query = _context.Tasks.Where(t => t.UserId == userId);
 
-        if (pagedParams.TaskStatusId.HasValue)
-        {
-            query = query.Where(t => t.StatusId == pagedParams.TaskStatusId.Value);
-        }
-
-        if (pagedParams.TaskPriorityId.HasValue)
-        {
-            query = query.Where(t => t.PriorityId == pagedParams.TaskPriorityId.Value);
-        }
+        query = ApplyFilters(query, pagedParams);
 
         int totalCount = await query.CountAsync();
 
@@ -58,6 +50,24 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
                             .ToListAsync();
 
         return (tasks, totalCount);
+    }
+
+    private IQueryable<TaskEntity> ApplyFilters(IQueryable<TaskEntity> query, TaskPagedParams pagedParams)
+    {
+        if (!string.IsNullOrWhiteSpace(pagedParams.Search))
+            query = query.Where(t =>
+                t.Title.Contains(pagedParams.Search) ||
+                t.Description.Contains(pagedParams.Search));
+
+        if (pagedParams.TaskStatusId.HasValue)
+            query = query.Where(t =>
+               t.StatusId == pagedParams.TaskStatusId.Value); 
+
+        if (pagedParams.TaskPriorityId.HasValue)
+            query = query.Where(t =>
+                t.PriorityId == pagedParams.TaskPriorityId.Value);
+        
+        return query;
     }
 
     public async Task EditTaskAsync(TaskEntity task)
