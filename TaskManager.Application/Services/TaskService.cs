@@ -80,10 +80,10 @@ public class TaskService : ITaskService
 
         return ResultDto<string>.Success(Messages.TASK_CREATED_SUCCESSFULLY);
     }
-    public async Task<ResultDto<TaskResponseDto>> EditTaskAsync(EditTaskDto dto, Guid userId)
+    public async Task<ResultDto<string>> EditTaskAsync(EditTaskDto dto, Guid userId)
     {
         if (dto.Id == Guid.Empty || userId == Guid.Empty)
-            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_UPDATE_FAILED));
+            return ResultDto<string>.Failure(Messages.TASK_UPDATE_FAILED);
 
         EditTaskValidator validator = new EditTaskValidator();
         await validator.ValidateAndThrowAsync(dto);
@@ -91,7 +91,7 @@ public class TaskService : ITaskService
         TaskEntity task = await _taskRepository.GetTaskById(dto.Id, userId);
 
         if (task == null)
-            return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_NOT_FOUND));
+            return ResultDto<string>.Failure(Messages.TASK_NOT_FOUND);
 
         dto.Adapt(task);
 
@@ -99,7 +99,7 @@ public class TaskService : ITaskService
 
         await _taskRepository.EditTaskAsync(task);
 
-        return ResultDto<TaskResponseDto>.Success(taskDto);
+        return ResultDto<string>.Success(Messages.TASK_UPDATED_SUCCESSFULLY);
     }
 
     public async Task<ResultDto<string>> DeleteTaskAsync(Guid taskId, Guid userId)
