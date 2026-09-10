@@ -18,26 +18,12 @@ public class TaskController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("GetById")]
+    [HttpGet("{taskId}")]
     public async Task<IActionResult> GetById([FromRoute] Guid taskId)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         var result = await _taskService.GetTaskById(taskId, userId);
-
-        if (!result.IsSuccess)
-            return NotFound(result);
-
-        return Ok(result);
-    }
-
-    [Authorize]
-    [HttpGet("GetByTitle")]
-    public async Task<IActionResult> GetByTitle(string title)
-    {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var result = await _taskService.GetTasksByTitle(title, userId);
 
         if (!result.IsSuccess)
             return NotFound(result);

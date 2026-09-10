@@ -18,17 +18,6 @@ public class TaskService : ITaskService
     {
         _taskRepository = taskRepository;
     }
-    public async Task<ResultDto<List<TaskResponseDto>>> GetTasksByTitle(string title, Guid userId)
-    {
-        List<TaskEntity> tasks = await _taskRepository.GetTaskByTitle(title, userId);
-
-        if (tasks.Count == 0)
-            return ResultDto<List<TaskResponseDto>>.Failure(string.Format(Messages.TASK_NOT_FOUND));
-
-        List<TaskResponseDto> listOfTasks = tasks.Adapt<List<TaskResponseDto>>();
-
-        return ResultDto<List<TaskResponseDto>>.Success(listOfTasks);
-    }
 
     public async Task<ResultDto<TaskResponseDto>> GetTaskById(Guid taskId, Guid userId)
     {
@@ -63,7 +52,6 @@ public class TaskService : ITaskService
     }
 
     public async Task<ResultDto<string>> AddTaskAsync(CreateTaskDto task, Guid userId)
-
     {
         if (task == null || userId == Guid.Empty)
             return ResultDto<string>.Failure(Messages.TASK_CREATION_FAILED);

@@ -7,7 +7,6 @@ namespace TaskManager.Application.Interfaces;
 
 public interface ITaskService
 {
-    Task<ResultDto<List<TaskResponseDto>>> GetTasksByTitle(string title, Guid userId);
     Task<ResultDto<TaskResponseDto>> GetTaskById(Guid taskId, Guid userId);
     Task<ResultDto<string>> AddTaskAsync(CreateTaskDto task, Guid userId);
     Task<ResultDto<PagedResultDto<TaskResponseDto>>> GetPaged(Guid userId, TaskPagedParams pagedParams);

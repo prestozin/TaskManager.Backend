@@ -13,14 +13,7 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
         _context = context;
     }
 
-    public async Task<List<TaskEntity>> GetTaskByTitle(string title, Guid userId)
-    {
-       return await _context.Tasks
-            .Where(t => t.Title != null && t.Title.Contains(title) && t.UserId == userId)
-            .ToListAsync();
-    }
-
-    public async Task<TaskEntity?> GetTaskById(Guid? taskId, Guid userId)
+    public async Task<TaskEntity?> GetTaskById(Guid? taskId, Guid? userId)
     {
         return await _context.Tasks
             .Include(t => t.TaskStatus)
