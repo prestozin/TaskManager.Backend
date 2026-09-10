@@ -19,7 +19,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpGet("GetById")]
-    public async Task<IActionResult> GetById(Guid taskId)
+    public async Task<IActionResult> GetById([FromRoute] Guid taskId)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
