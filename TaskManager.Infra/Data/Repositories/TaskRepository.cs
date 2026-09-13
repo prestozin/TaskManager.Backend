@@ -47,19 +47,33 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
     private IQueryable<TaskEntity> ApplyFilters(IQueryable<TaskEntity> query, TaskPagedParams pagedParams)
     {
+        if (pagedParams.StartDate.HasValue)
+        {
+            var startDate = pagedParams.StartDate.Value.Date;
+            query = query.Where(t => t.CreatedAt >= startDate);
+        }
+
+        if (pagedParams.EndDate.HasValue)
+        {
+            var endDate = pagedParams.EndDate.Value.Date.AddDays(1);
+            query = query.Where(t => t.CreatedAt < endDate);
+        }
+
         if (!string.IsNullOrWhiteSpace(pagedParams.Search))
-            query = query.Where(t =>
-                t.Title.Contains(pagedParams.Search) ||
-                t.Description.Contains(pagedParams.Search));
+        {
+            query = query.Where(t => t.Title.Contains(pagedParams.Search) || t.Description.Contains(pagedParams.Search));
+        }
 
         if (pagedParams.TaskStatusId.HasValue)
-            query = query.Where(t =>
-               t.StatusId == pagedParams.TaskStatusId.Value); 
+        {
+            query = query.Where(t => t.StatusId == pagedParams.TaskStatusId.Value);
+        }
 
         if (pagedParams.TaskPriorityId.HasValue)
-            query = query.Where(t =>
-                t.PriorityId == pagedParams.TaskPriorityId.Value);
-        
+        {
+            query = query.Where(t => t.PriorityId == pagedParams.TaskPriorityId.Value);
+        }
+
         return query;
     }
 
