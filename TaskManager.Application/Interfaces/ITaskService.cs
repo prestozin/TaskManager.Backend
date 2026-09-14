@@ -11,6 +11,6 @@ public interface ITaskService
     Task<ResultDto<string>> AddTaskAsync(CreateTaskDto task, Guid userId);
     Task<ResultDto<PagedResultDto<TaskResponseDto>>> GetPaged(Guid userId, TaskPagedParams pagedParams);
     Task<ResultDto<string>> EditTaskAsync(EditTaskDto dto, Guid userId);
-    Task<ResultDto<string>> DeleteTaskAsync(Guid taskId, Guid userId);
+    Task<ResultDto<string>> DeleteTaskAsync(DeleteTaskDto request, Guid userId);
     Task<ResultDto<TaskSelectablesDto>> GetSelectablesAsync();
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Task;
 using TaskManager.Application.Interfaces;
 using TaskManager.Core.Shared;
 
@@ -74,12 +75,12 @@ public class TaskController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("{taskId}")]
-    public async Task<IActionResult> DeleteTask([FromRoute] Guid taskId)
+    [HttpDelete("DeleteTask")]
+    public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskDto request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.DeleteTaskAsync(taskId, userId);
+        var result = await _taskService.DeleteTaskAsync(request, userId);
 
         if (!result.IsSuccess)
             return NotFound(result);

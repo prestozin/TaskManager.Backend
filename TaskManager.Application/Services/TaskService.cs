@@ -90,20 +90,40 @@ public class TaskService : ITaskService
         return ResultDto<string>.Success(Messages.TASK_UPDATED_SUCCESSFULLY);
     }
 
-    public async Task<ResultDto<string>> DeleteTaskAsync(Guid taskId, Guid userId)
+    public async Task<ResultDto<string>> DeleteTaskAsync(DeleteTaskDto request, Guid userId)
     {
-        if (taskId == Guid.Empty || userId == Guid.Empty)
-            return ResultDto<string>.Failure(string.Format(Messages.TASK_DELETION_FAILED));
+        if (request.TaskId == null ||request.TaskId.Count == 0 || request.TaskId.Any(id => id == Guid.Empty) || userId == Guid.Empty)
+            return ResultDto<string>.Failure(Messages.TASK_DELETION_FAILED);
+        
 
-        TaskEntity task = await _taskRepository.GetTaskById(taskId, userId);
+        List<TaskEntity> deletedTasks = [];
 
-        if (task == null)
-            return ResultDto<string>.Failure(string.Format(Messages.TASK_NOT_FOUND));
+        foreach (Guid taskId in request.TaskId)
+        {
+            TaskEntity? task = await _taskRepository.GetTaskById(taskId, userId);
 
-        await _taskRepository.DeleteTaskAsync(task);
-        return ResultDto<string>.Success(string.Format(Messages.TASK_DELETED_SUCCESSFULLY));
+            if (task == null) continue;
+
+            await _taskRepository.DeleteTaskAsync(task);
+            deletedTasks.Add(task);
+        }
+
+        if (deletedTasks.Count == 0)
+            return ResultDto<string>.Failure(Messages.TASK_NOT_FOUND);
+
+        return ResultDto<string>.Success(GetDeletionMessage(request.TaskId, deletedTasks));
     }
 
+    private static string GetDeletionMessage(List<Guid> taskIds,List<TaskEntity> deletedTasks)
+    {
+        int deletedCount = deletedTasks.Count;
+        int notFoundCount = taskIds.Count - deletedCount;
+
+        if (notFoundCount > 0)
+            return $"{deletedCount} tarefa(s) excluída(s). {notFoundCount} tarefa(s) não encontrada(s).";
+
+        return $"{deletedCount} tarefa(s) excluída(s) com sucesso.";
+    }
     public async Task<ResultDto<TaskSelectablesDto>> GetSelectablesAsync()
     {
         List<Core.Entities.TaskStatus> statuses = await _taskRepository.GetTaskStatusesAsync();
