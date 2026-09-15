@@ -34,11 +34,11 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpGet("GetPaged")]
-    public async Task<IActionResult> GetPaged([FromQuery] TaskPagedParams pagedParams)
+    public async Task<IActionResult> GetPaged([FromQuery] TaskPagedParams request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.GetPaged(userId, pagedParams);
+        var result = await _taskService.GetPaged(userId, request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -48,11 +48,11 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpPost("AddTask")]
-    public async Task<IActionResult> AddTask(CreateTaskDto task)
+    public async Task<IActionResult> AddTask(CreateTaskDto request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.AddTaskAsync(task, userId);
+        var result = await _taskService.AddTaskAsync(request, userId);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -62,11 +62,11 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpPut("EditTask")]
-    public async Task<IActionResult> EditTask(EditTaskDto dto)
+    public async Task<IActionResult> EditTask(EditTaskDto request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.EditTaskAsync(dto, userId);
+        var result = await _taskService.EditTaskAsync(request, userId);
 
         if (!result.IsSuccess)
             return NotFound(result);

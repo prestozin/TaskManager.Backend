@@ -60,6 +60,9 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(t => t.TaskPriority)
                 .WithMany()
                 .HasForeignKey(t => t.PriorityId);
+
+            entity.Property(t => t.CreatedAt)
+                .HasConversion(date => date, date => DateTime.SpecifyKind(date, DateTimeKind.Utc));
         });
 
         modelBuilder.Entity<Core.Entities.TaskStatus>(entity =>
