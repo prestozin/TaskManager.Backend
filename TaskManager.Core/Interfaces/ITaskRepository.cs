@@ -7,7 +7,7 @@ public interface ITaskRepository
 {
     Task AddTaskAsync(TaskEntity task);
     Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetPaged(Guid userId, TaskPagedParams pagedParams);
-    Task<TaskEntity> GetTaskById(Guid? taskId, Guid? userId);
+    Task<TaskEntity?> GetTaskByIdAsync(Guid? taskId, Guid? userId);
     Task EditTaskAsync(TaskEntity task);
     Task<bool> DeleteTaskAsync(TaskEntity task);
     Task<List<Entities.TaskStatus>> GetTaskStatusesAsync();
