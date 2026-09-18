@@ -22,7 +22,7 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet("GetUser")]
-    public async Task<IActionResult> GetProfile()
+    public async Task<IActionResult> GetUser()
     {
         var result = await _userService.GetUser();
 
