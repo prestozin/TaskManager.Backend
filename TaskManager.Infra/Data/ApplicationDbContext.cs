@@ -10,84 +10,62 @@ public class ApplicationDbContext : DbContext
     public DbSet<Core.Entities.TaskStatus> Status { get; set; }
     public DbSet<TaskPriority> Priorities { get; set; }
 
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("Users");
 
-            entity.HasKey(u => u.Id);
+            entity.HasKey(user => user.Id);
 
-            entity.Property(u => u.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entity.Property(u => u.Email)
-                .IsRequired()
-                .HasMaxLength(255);
-
-            entity.HasIndex(u => u.Email)
+            entity.HasIndex(user => user.Email)
                 .IsUnique();
-
-            entity.Property(u => u.HashPassword)
-                .IsRequired()
-                .HasMaxLength(255);
         });
 
         modelBuilder.Entity<TaskEntity>(entity =>
         {
             entity.ToTable("Tasks");
 
-            entity.HasKey(t => t.Id);
+            entity.HasKey(task => task.Id);
 
-            entity.Property(t => t.Title)
-                .IsRequired()
-                .HasMaxLength(50);
+            entity.HasOne(task => task.User)
+                .WithMany(user => user.Tasks)
+                .HasForeignKey(task => task.UserId);
 
-            entity.Property(t => t.Description)
-                .HasMaxLength(500);
-
-            entity.HasOne(t => t.User)
-                .WithMany(t => t.Tasks)
-                .HasForeignKey(t => t.UserId);
-
-            entity.HasOne(t => t.TaskStatus)
+            entity.HasOne(task => task.TaskStatus)
                 .WithMany()
-                .HasForeignKey(t => t.StatusId);
+                .HasForeignKey(task => task.StatusId);
 
-            entity.HasOne(t => t.TaskPriority)
+            entity.HasOne(task => task.TaskPriority)
                 .WithMany()
-                .HasForeignKey(t => t.PriorityId);
+                .HasForeignKey(task => task.PriorityId);
 
-            entity.Property(t => t.CreatedAt)
-                .HasConversion(date => date, date => DateTime.SpecifyKind(date, DateTimeKind.Utc));
+            entity.Property(task => task.CreatedAt)
+                .HasConversion(
+                    date => date,
+                    date => DateTime.SpecifyKind(date, DateTimeKind.Utc)
+                );
         });
 
         modelBuilder.Entity<Core.Entities.TaskStatus>(entity =>
         {
             entity.ToTable("TaskStatus");
 
-            entity.HasKey(ts => ts.Id);
-
-            entity.Property(ts => ts.Name)
-                .IsRequired()
-                .HasMaxLength(50);
+            entity.HasKey(status => status.Id);
         });
 
         modelBuilder.Entity<TaskPriority>(entity =>
         {
             entity.ToTable("TaskPriority");
 
-            entity.HasKey(ts => ts.Id);
-
-            entity.Property(ts => ts.Name)
-                .IsRequired()
-                .HasMaxLength(50);
+            entity.HasKey(priority => priority.Id);
         });
 
         base.OnModelCreating(modelBuilder);
     }
 }
-

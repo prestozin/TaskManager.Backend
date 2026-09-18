@@ -24,7 +24,7 @@ public class TaskService : ITaskService
         if (taskId == Guid.Empty || userId == Guid.Empty)
             return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_FETCH_FAILED));
 
-        TaskEntity task = await _taskRepository.GetTaskByIdAsync(taskId, userId);
+        TaskEntity? task = await _taskRepository.GetTaskByIdAsync(taskId, userId);
 
         if (task == null)
             return ResultDto<TaskResponseDto>.Failure(string.Format(Messages.TASK_NOT_FOUND));
@@ -76,7 +76,7 @@ public class TaskService : ITaskService
         EditTaskValidator validator = new EditTaskValidator();
         await validator.ValidateAndThrowAsync(dto);
 
-        TaskEntity task = await _taskRepository.GetTaskByIdAsync(dto.Id, userId);
+        TaskEntity? task = await _taskRepository.GetTaskByIdAsync(dto.Id, userId);
 
         if (task == null)
             return ResultDto<string>.Failure(Messages.TASK_NOT_FOUND);
