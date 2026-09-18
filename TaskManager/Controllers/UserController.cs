@@ -21,7 +21,7 @@ public class UserController : ControllerBase
 
 
     [Authorize]
-    [HttpGet("GetProfile")]
+    [HttpGet("GetUser")]
     public async Task<IActionResult> GetProfile()
     {
         var result = await _userService.GetUser();
@@ -33,10 +33,10 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("UpdateProfile")]
-    public async Task<IActionResult> UpdateProfile([FromBody] EditUserRequest request)
+    [HttpPut("EditUser")]
+    public async Task<IActionResult> EditUser([FromBody] EditUserRequest request)
     {
-        var result = await _userService.UpdateUser(request);
+        var result = await _userService.EditUser(request);
 
         if (!result.IsSuccess)
             return NotFound(result);

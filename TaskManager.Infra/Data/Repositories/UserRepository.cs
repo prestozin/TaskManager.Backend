@@ -19,7 +19,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
             .SingleOrDefaultAsync(u => u.Id == userId);
     }
 
-    public async Task UpdateUserByIdAsync(User user)
+    public async Task EditUserByIdAsync(User user)
     {
         _context.Update(user);
         await _context.SaveChangesAsync();

@@ -7,6 +7,6 @@ namespace TaskManager.Application.Interfaces
     public interface IUserService
     {
         Task<ResultResponse<UserResponse>> GetUser();
-        Task<ResultResponse<string>> UpdateUser(EditUserRequest request);
+        Task<ResultResponse<string>> EditUser(EditUserRequest request);
     }
 }

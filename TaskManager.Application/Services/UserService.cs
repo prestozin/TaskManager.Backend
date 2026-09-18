@@ -35,7 +35,7 @@ public class UserService : IUserService
         return ResultResponse<UserResponse>.Success(userDto);
     }
 
-    public async Task<ResultResponse<string>> UpdateUser(EditUserRequest request)
+    public async Task<ResultResponse<string>> EditUser(EditUserRequest request)
     {
         EditUserValidator validator = new EditUserValidator();
         await validator.ValidateAndThrowAsync(request);
@@ -47,7 +47,7 @@ public class UserService : IUserService
 
         request.Adapt(user);
 
-        await _userRepository.UpdateUserByIdAsync(user);
+        await _userRepository.EditUserByIdAsync(user);
 
         return ResultResponse<string>.Success(Messages.USER_UPDATED_SUCCESSFULLY);
     }
