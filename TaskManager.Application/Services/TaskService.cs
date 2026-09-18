@@ -131,6 +131,7 @@ public class TaskService : ITaskService
 
         return $"{deletedCount} tarefa(s) excluída(s) com sucesso.";
     }
+
     public async Task<ResultResponse<TaskSelectablesResponse>> GetSelectablesAsync()
     {
         List<Core.Entities.TaskStatus> statuses = await _taskRepository.GetTaskStatusesAsync();

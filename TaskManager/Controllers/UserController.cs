@@ -21,7 +21,7 @@ public class UserController : ControllerBase
 
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("GetProfile")]
     public async Task<IActionResult> GetProfile()
     {
         var result = await _userService.GetUser();
@@ -33,7 +33,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("UpdateProfile")]
+    [HttpPut("UpdateProfile")]
     public async Task<IActionResult> UpdateProfile([FromBody] EditUserRequest request)
     {
         var result = await _userService.UpdateUser(request);
