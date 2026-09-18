@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskManager.Application.DTOs;
-using TaskManager.Application.DTOs.Task;
+using TaskManager.Application.DTOs.Task.Request;
 using TaskManager.Application.Interfaces;
 using TaskManager.Core.Shared;
 
@@ -24,7 +24,7 @@ public class TaskController : ControllerBase
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.GetTaskById(taskId, userId);
+        var result = await _taskService.GetTaskAsync(taskId, userId);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -38,7 +38,7 @@ public class TaskController : ControllerBase
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await _taskService.GetPaged(userId, request);
+        var result = await _taskService.GetPagedAsync(userId, request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -48,7 +48,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpPost("AddTask")]
-    public async Task<IActionResult> AddTask(CreateTaskDto request)
+    public async Task<IActionResult> AddTask(CreateTaskRequest request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
@@ -62,7 +62,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpPut("EditTask")]
-    public async Task<IActionResult> EditTask(EditTaskDto request)
+    public async Task<IActionResult> EditTask(EditTaskRequest request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
@@ -76,7 +76,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpDelete("DeleteTask")]
-    public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskDto request)
+    public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskRequest request)
     {
         Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 

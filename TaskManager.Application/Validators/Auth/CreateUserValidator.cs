@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
-using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Auth.Request;
 using TaskManager.Core.Constants;
 
 namespace TaskManager.Application.Validators;
 
-public class CreateUserValidator : AbstractValidator<CreateUserDto>
+public class CreateUserValidator : AbstractValidator<CreateUserRequest>
 {
     public CreateUserValidator()
     {

@@ -6,6 +6,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Auth.Request;
+using TaskManager.Application.DTOs.Auth.Response;
 using TaskManager.Application.Interfaces;
 using TaskManager.Application.Validators;
 using TaskManager.Core.Constants;
@@ -22,7 +24,7 @@ public class AuthService : IAuthService
         _authRepository = authRepository;
         _configuration = configuration;
     }
-    public async Task<ResultDto<CreateUserDto>> RegisterAsync(CreateUserDto userRegisterDto)
+    public async Task<ResultDto<CreateUserRequest>> RegisterAsync(CreateUserRequest userRegisterDto)
     {
         CreateUserValidator validator = new CreateUserValidator();
         await validator.ValidateAndThrowAsync(userRegisterDto);
@@ -30,7 +32,7 @@ public class AuthService : IAuthService
         bool exists = await _authRepository.ExistsAsync(userRegisterDto.Email);
 
         if (exists)
-            return ResultDto<CreateUserDto>.Failure(string.Format(Messages.USER_ALREADY_EXISTS));
+            return ResultDto<CreateUserRequest>.Failure(string.Format(Messages.USER_ALREADY_EXISTS));
 
         var newUser = userRegisterDto.Adapt<User>();
 
@@ -39,28 +41,28 @@ public class AuthService : IAuthService
         newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
 
         await _authRepository.AddAsync(newUser);
-        return ResultDto<CreateUserDto>.Success(string.Format(Messages.USER_CREATED_SUCCESSFULLY));
+        return ResultDto<CreateUserRequest>.Success(string.Format(Messages.USER_CREATED_SUCCESSFULLY));
     }
 
-    public async Task<ResultDto<LoginResponseDto>> LoginAsync(UserLoginDto userLoginDto)
+    public async Task<ResultDto<LoginResponse>> LoginAsync(UserLoginResponse userLoginDto)
     {
         User? user = await _authRepository.GetByEmailAsync(userLoginDto.Email);
 
         if (user == null)
-            return ResultDto<LoginResponseDto>.Failure(Messages.USER_NOT_FOUND);
+            return ResultDto<LoginResponse>.Failure(Messages.USER_NOT_FOUND);
 
         bool validPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.HashPassword);
 
         if (!validPassword)
-            return ResultDto<LoginResponseDto>.Failure(Messages.USER_OR_PASSWORD_INVALID);
+            return ResultDto<LoginResponse>.Failure(Messages.USER_OR_PASSWORD_INVALID);
 
         string userToken = GenerateToken(user);
 
-        LoginResponseDto response = user.Adapt<LoginResponseDto>();
+        LoginResponse response = user.Adapt<LoginResponse>();
 
         response.Token = userToken;
 
-        return ResultDto<LoginResponseDto>.Success(response, Messages.LOGIN_SUCCESSFULLY);
+        return ResultDto<LoginResponse>.Success(response, Messages.LOGIN_SUCCESSFULLY);
     }
 
     private string GenerateToken(User user)

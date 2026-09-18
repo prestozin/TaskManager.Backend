@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TaskManager.Application.DTOs.User.Request;
 using TaskManager.Application.Interfaces;
 using TaskManager.Application.Services;
 
@@ -20,10 +21,26 @@ public class UserController : ControllerBase
 
 
     [Authorize]
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetById([FromRoute] Guid userId)
+    [HttpGet]
+    public async Task<IActionResult> GetProfile()
     {
-        var result = await _userService.GetUserById(userId);
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var result = await _userService.GetUser(userId);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPatch("Profile")]
+    public async Task<IActionResult> EditProfile([FromBody] EditUserRequest request)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var result = await _userService.EditUser(request, userId);
 
         if (!result.IsSuccess)
             return NotFound(result);

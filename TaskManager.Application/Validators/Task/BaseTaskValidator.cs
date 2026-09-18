@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Task.Request;
 using TaskManager.Core.Constants;
 using TaskManager.Core.Enums;
 
 namespace TaskManager.Application.Validators.Task;
 
-public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskDto
+public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskRequest
 {
     protected void SetupCommonRules()
     {

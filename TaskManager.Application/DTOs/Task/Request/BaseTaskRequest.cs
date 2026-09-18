@@ -1,7 +1,6 @@
-﻿
-namespace TaskManager.Application.DTOs;
+﻿namespace TaskManager.Application.DTOs.Task.Request;
 
-public class BaseTaskDto
+public class BaseTaskRequest
 {
     public string? Title { get; set; }
     public string? Description { get; set; }

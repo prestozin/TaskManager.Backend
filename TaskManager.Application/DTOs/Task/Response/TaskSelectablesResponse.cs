@@ -1,8 +1,8 @@
 ﻿using TaskManager.Core.Entities;
 
-namespace TaskManager.Application.DTOs.Task;
+namespace TaskManager.Application.DTOs.Task.Response;
 
-public class TaskSelectablesDto
+public class TaskSelectablesResponse
 {
     public List<Core.Entities.TaskStatus>? Status { get; set; }
     public List<TaskPriority>? Priority { get; set; }

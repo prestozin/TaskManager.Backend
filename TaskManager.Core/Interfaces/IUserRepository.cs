@@ -5,5 +5,6 @@ namespace TaskManager.Core.Interfaces
     public interface IUserRepository
     {
         Task<User> GetUserByIdAsync(Guid userId);
+        Task UpdateUserByIdAsync(User user);
     }
 }

@@ -1,6 +1,7 @@
-﻿using TaskManager.Application.DTOs;
-using TaskManager.Application.Interfaces;
+﻿using TaskManager.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using TaskManager.Application.DTOs.Auth.Response;
+using TaskManager.Application.DTOs.Auth.Request;
 
 namespace TaskManager.Api.Controllers;
 
@@ -17,7 +18,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("Register")]
-    public async Task<IActionResult> Register(CreateUserDto dto)
+    public async Task<IActionResult> Register(CreateUserRequest dto)
     {
        var result = await _authService.RegisterAsync(dto);
 
@@ -28,7 +29,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Login")]
-    public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
+    public async Task<IActionResult> Login([FromBody] UserLoginResponse dto)
     {
         var result = await _authService.LoginAsync(dto);
 
