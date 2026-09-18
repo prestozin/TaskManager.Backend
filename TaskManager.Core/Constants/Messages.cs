@@ -32,6 +32,9 @@ public static class Messages
     public const string USER_CREATED_SUCCESSFULLY = "Usuário criado com sucesso";
     public const string USER_CREATION_FAILED = "Falha ao criar usuário";
 
+    public const string USER_UPDATED_SUCCESSFULLY = "Informações atualizadas com sucesso";
+    public const string USER_UPDATED_FAILED = "Falha ao atualizar informações";
+
     public const string USER_OR_PASSWORD_INVALID = "Usuário ou senha inválido.";
 
     public const string EMAIL_REQUIRED = "O e-mail é obrigatório.";

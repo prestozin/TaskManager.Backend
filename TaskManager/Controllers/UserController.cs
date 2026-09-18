@@ -24,9 +24,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProfile()
     {
-        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-        var result = await _userService.GetUser(userId);
+        var result = await _userService.GetUser();
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -35,12 +33,10 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("Profile")]
-    public async Task<IActionResult> EditProfile([FromBody] EditUserRequest request)
+    [HttpPatch("UpdateProfile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] EditUserRequest request)
     {
-        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-        var result = await _userService.EditUser(request, userId);
+        var result = await _userService.UpdateUser(request);
 
         if (!result.IsSuccess)
             return NotFound(result);

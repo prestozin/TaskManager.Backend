@@ -11,10 +11,14 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserContext, CurrentUserContext>();
 
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+
+        
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {

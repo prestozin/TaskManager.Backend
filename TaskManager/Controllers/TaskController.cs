@@ -22,9 +22,7 @@ public class TaskController : ControllerBase
     [HttpGet("{taskId}")]
     public async Task<IActionResult> GetById([FromRoute] Guid taskId)
     {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var result = await _taskService.GetTaskAsync(taskId, userId);
+        var result = await _taskService.GetTaskAsync(taskId);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -36,9 +34,7 @@ public class TaskController : ControllerBase
     [HttpGet("GetPaged")]
     public async Task<IActionResult> GetPaged([FromQuery] TaskPagedParams request)
     {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var result = await _taskService.GetPagedAsync(userId, request);
+        var result = await _taskService.GetPagedAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -50,9 +46,7 @@ public class TaskController : ControllerBase
     [HttpPost("AddTask")]
     public async Task<IActionResult> AddTask(CreateTaskRequest request)
     {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var result = await _taskService.AddTaskAsync(request, userId);
+        var result = await _taskService.AddTaskAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -64,9 +58,7 @@ public class TaskController : ControllerBase
     [HttpPut("EditTask")]
     public async Task<IActionResult> EditTask(EditTaskRequest request)
     {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var result = await _taskService.EditTaskAsync(request, userId);
+        var result = await _taskService.EditTaskAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -78,9 +70,7 @@ public class TaskController : ControllerBase
     [HttpDelete("DeleteTask")]
     public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskRequest request)
     {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var result = await _taskService.DeleteTaskAsync(request, userId);
+        var result = await _taskService.DeleteTaskAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -92,8 +82,6 @@ public class TaskController : ControllerBase
     [HttpGet("GetSelectables")]
     public async Task<IActionResult> GetSelectables()
     {
-        Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
         var result = await _taskService.GetSelectablesAsync();
 
         if (!result.IsSuccess)

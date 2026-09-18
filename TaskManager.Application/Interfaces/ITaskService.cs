@@ -8,10 +8,10 @@ namespace TaskManager.Application.Interfaces;
 
 public interface ITaskService
 {
-    Task<ResultDto<TaskResponse>> GetTaskAsync(Guid taskId, Guid userId);
-    Task<ResultDto<string>> AddTaskAsync(CreateTaskRequest task, Guid userId);
-    Task<ResultDto<PagedResultDto<TaskResponse>>> GetPagedAsync(Guid userId, TaskPagedParams pagedParams);
-    Task<ResultDto<string>> EditTaskAsync(EditTaskRequest dto, Guid userId);
-    Task<ResultDto<string>> DeleteTaskAsync(DeleteTaskRequest request, Guid userId);
-    Task<ResultDto<TaskSelectablesResponse>> GetSelectablesAsync();
+    Task<ResultResponse<TaskResponse>> GetTaskAsync(Guid taskId);
+    Task<ResultResponse<string>> AddTaskAsync(CreateTaskRequest task);
+    Task<ResultResponse<PagedResultDto<TaskResponse>>> GetPagedAsync(TaskPagedParams pagedParams);
+    Task<ResultResponse<string>> EditTaskAsync(EditTaskRequest dto);
+    Task<ResultResponse<string>> DeleteTaskAsync(DeleteTaskRequest request);
+    Task<ResultResponse<TaskSelectablesResponse>> GetSelectablesAsync();
 }
