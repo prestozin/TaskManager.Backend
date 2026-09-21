@@ -21,9 +21,9 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
             .SingleOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
     }
 
-    public async Task AddTaskAsync(TaskEntity task)
+    public async Task CreateTaskAsync(TaskEntity task)
     {
-        await _context.AddAsync(task);
+        await _context.Tasks.AddAsync(task);
         await _context.SaveChangesAsync();
     }
 
@@ -79,17 +79,14 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
     public async Task EditTaskAsync(TaskEntity task)
     {
-       _context.Update(task);
+       _context.Tasks.Update(task);
        await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteTaskAsync(TaskEntity task) 
+    public async Task DeleteTaskAsync(TaskEntity task) 
     {
-       var taskToDelete =  _context.Remove(task);
-
-       await _context.SaveChangesAsync();
-
-       return taskToDelete != null;
+       _context.Tasks.Remove(task);
+       await _context.SaveChangesAsync(); 
     }
 
     public async Task<List<Core.Entities.TaskStatus>> GetTaskStatusesAsync()

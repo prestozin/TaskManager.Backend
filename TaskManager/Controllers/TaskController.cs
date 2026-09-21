@@ -20,7 +20,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpGet("{taskId}")]
-    public async Task<IActionResult> GetById([FromRoute] Guid taskId)
+    public async Task<IActionResult> GetByIdAsync([FromRoute] Guid taskId)
     {
         var result = await _taskService.GetTaskAsync(taskId);
 
@@ -32,7 +32,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpGet("GetPaged")]
-    public async Task<IActionResult> GetPaged([FromQuery] TaskPagedParams request)
+    public async Task<IActionResult> GetPagedAsync([FromQuery] TaskPagedParams request)
     {
         var result = await _taskService.GetPagedAsync(request);
 
@@ -43,10 +43,10 @@ public class TaskController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("AddTask")]
-    public async Task<IActionResult> AddTask(CreateTaskRequest request)
+    [HttpPost("CreateTask")]
+    public async Task<IActionResult> CreateTaskAsync(CreateTaskRequest request)
     {
-        var result = await _taskService.AddTaskAsync(request);
+        var result = await _taskService.CreateTaskAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -56,7 +56,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpPut("EditTask")]
-    public async Task<IActionResult> EditTask(EditTaskRequest request)
+    public async Task<IActionResult> EditTaskAsync(EditTaskRequest request)
     {
         var result = await _taskService.EditTaskAsync(request);
 
@@ -68,7 +68,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpDelete("DeleteTask")]
-    public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskRequest request)
+    public async Task<IActionResult> DeleteTaskAsync([FromBody] DeleteTaskRequest request)
     {
         var result = await _taskService.DeleteTaskAsync(request);
 
@@ -80,7 +80,7 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpGet("GetSelectables")]
-    public async Task<IActionResult> GetSelectables()
+    public async Task<IActionResult> GetSelectablesAsync()
     {
         var result = await _taskService.GetSelectablesAsync();
 

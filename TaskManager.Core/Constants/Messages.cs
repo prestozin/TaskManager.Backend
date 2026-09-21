@@ -3,6 +3,7 @@
 public static class Messages
 {
     public const string FIELD_NOT_FOUND = "Campo {0} não encontrado.";
+    public const string FIELD_REQUIRED = "Campo {0} é obrigatório.";
     public const string TASK_TITLE_REQUIRED = "O título da tarefa é obrigatório.";
     public const string TASK_TITLE_LENGTH = "O título deve ter entre 3 e 50 caracteres.";
 
@@ -35,10 +36,13 @@ public static class Messages
     public const string USER_UPDATED_SUCCESSFULLY = "Informações atualizadas com sucesso";
     public const string USER_UPDATED_FAILED = "Falha ao atualizar informações";
 
+    public const string USER_DELETED_SUCCESSFULLY = "Usuário deletado com sucesso.";
+
     public const string USER_OR_PASSWORD_INVALID = "Usuário ou senha inválido.";
 
     public const string EMAIL_REQUIRED = "O e-mail é obrigatório.";
     public const string PASSWORD_REQUIRED = "A senha é obrigatória.";
+    public const string PASSWORD_INVALID = "Senha de usuário incorreta.";
 
     public const string EMAIL_INVALID = "Email inválido";
     public const string EMAIL_MAX_LENGTH = "O e-mail não pode exceder {0} caracteres.";

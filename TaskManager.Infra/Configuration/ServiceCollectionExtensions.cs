@@ -15,7 +15,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICurrentUserContext, CurrentUserContext>();
 
         services.AddScoped<ITaskRepository, TaskRepository>();
-        services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
         

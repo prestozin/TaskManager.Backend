@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using TaskManager.Application.DTOs.User.Request;
 using TaskManager.Application.Interfaces;
-using TaskManager.Application.Services;
 
 namespace TaskManager.Api.Controllers;
 
@@ -22,9 +20,9 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet("GetUser")]
-    public async Task<IActionResult> GetUser()
+    public async Task<IActionResult> GetUserAsync()
     {
-        var result = await _userService.GetUser();
+        var result = await _userService.GetUserAsync();
 
         if (!result.IsSuccess)
             return NotFound(result);
@@ -34,9 +32,9 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPut("EditUser")]
-    public async Task<IActionResult> EditUser([FromBody] EditUserRequest request)
+    public async Task<IActionResult> EditUserAsync([FromBody] EditUserRequest request)
     {
-        var result = await _userService.EditUser(request);
+        var result = await _userService.EditUserAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);

@@ -17,19 +17,19 @@ using TaskManager.Core.Interfaces;
 namespace TaskManager.Application.Services;
 public class AuthService : IAuthService
 {   
-    private readonly IAuthRepository _authRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
-    public AuthService(IAuthRepository authRepository, IConfiguration configuration)
+    public AuthService(IUserRepository userRepository, IConfiguration configuration)
     {
-        _authRepository = authRepository;
+        _userRepository = userRepository;
         _configuration = configuration;
     }
-    public async Task<ResultResponse<CreateUserRequest>> RegisterAsync(CreateUserRequest userRegisterDto)
+    public async Task<ResultResponse<CreateUserRequest>> CreateUserAsync(CreateUserRequest userRegisterDto)
     {
         CreateUserValidator validator = new CreateUserValidator();
         await validator.ValidateAndThrowAsync(userRegisterDto);
 
-        bool exists = await _authRepository.ExistsAsync(userRegisterDto.Email);
+        bool exists = await _userRepository.UserExistsAsync(userRegisterDto.Email);
 
         if (exists)
             return ResultResponse<CreateUserRequest>.Failure(string.Format(Messages.USER_ALREADY_EXISTS));
@@ -40,13 +40,13 @@ public class AuthService : IAuthService
         newUser.CreatedAt = DateTime.UtcNow;
         newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
 
-        await _authRepository.AddAsync(newUser);
+        await _userRepository.AddUserAsync(newUser);
         return ResultResponse<CreateUserRequest>.Success(string.Format(Messages.USER_CREATED_SUCCESSFULLY));
     }
 
     public async Task<ResultResponse<LoginResponse>> LoginAsync(UserLoginResponse userLoginDto)
     {
-        User? user = await _authRepository.GetByEmailAsync(userLoginDto.Email);
+        User? user = await _userRepository.GetUserByEmailAsync(userLoginDto.Email);
 
         if (user == null)
             return ResultResponse<LoginResponse>.Failure(Messages.USER_NOT_FOUND);

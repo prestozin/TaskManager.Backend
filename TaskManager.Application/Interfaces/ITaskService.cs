@@ -9,7 +9,7 @@ namespace TaskManager.Application.Interfaces;
 public interface ITaskService
 {
     Task<ResultResponse<TaskResponse>> GetTaskAsync(Guid taskId);
-    Task<ResultResponse<string>> AddTaskAsync(CreateTaskRequest task);
+    Task<ResultResponse<string>> CreateTaskAsync(CreateTaskRequest task);
     Task<ResultResponse<PagedResultDto<TaskResponse>>> GetPagedAsync(TaskPagedParams pagedParams);
     Task<ResultResponse<string>> EditTaskAsync(EditTaskRequest dto);
     Task<ResultResponse<string>> DeleteTaskAsync(DeleteTaskRequest request);
