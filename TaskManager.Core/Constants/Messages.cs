@@ -39,6 +39,7 @@ public static class Messages
     public const string USER_DELETED_SUCCESSFULLY = "Usuário deletado com sucesso.";
 
     public const string USER_OR_PASSWORD_INVALID = "Usuário ou senha inválido.";
+    public const string NEW_PASSWORD_MUST_BE_DIFFERENT = "A nova senha deve ser diferente da antiga.";
 
     public const string EMAIL_REQUIRED = "O e-mail é obrigatório.";
     public const string PASSWORD_REQUIRED = "A senha é obrigatória.";

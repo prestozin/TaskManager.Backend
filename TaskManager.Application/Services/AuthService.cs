@@ -24,36 +24,34 @@ public class AuthService : IAuthService
         _userRepository = userRepository;
         _configuration = configuration;
     }
-    public async Task<ResultResponse<CreateUserRequest>> CreateUserAsync(CreateUserRequest userRegisterDto)
+    public async Task<ResultResponse<CreateUserRequest>> CreateUserAsync(CreateUserRequest request)
     {
         CreateUserValidator validator = new CreateUserValidator();
-        await validator.ValidateAndThrowAsync(userRegisterDto);
+        await validator.ValidateAndThrowAsync(request);
 
-        bool exists = await _userRepository.UserExistsAsync(userRegisterDto.Email);
+        bool userExists = await _userRepository.UserExistsAsync(request.Email);
 
-        if (exists)
+        if (userExists)
             return ResultResponse<CreateUserRequest>.Failure(string.Format(Messages.USER_ALREADY_EXISTS));
 
-        var newUser = userRegisterDto.Adapt<User>();
+        var newUser = request.Adapt<User>();
 
-        newUser.Id = Guid.NewGuid();
-        newUser.CreatedAt = DateTime.UtcNow;
-        newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
+        newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
         await _userRepository.AddUserAsync(newUser);
         return ResultResponse<CreateUserRequest>.Success(string.Format(Messages.USER_CREATED_SUCCESSFULLY));
     }
 
-    public async Task<ResultResponse<LoginResponse>> LoginAsync(UserLoginResponse userLoginDto)
+    public async Task<ResultResponse<LoginResponse>> LoginAsync(LoginRequest userLoginDto)
     {
         User? user = await _userRepository.GetUserByEmailAsync(userLoginDto.Email);
 
         if (user == null)
             return ResultResponse<LoginResponse>.Failure(Messages.USER_NOT_FOUND);
 
-        bool validPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.HashPassword);
+        bool isValidPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.HashPassword);
 
-        if (!validPassword)
+        if (!isValidPassword)
             return ResultResponse<LoginResponse>.Failure(Messages.USER_OR_PASSWORD_INVALID);
 
         string userToken = GenerateToken(user);

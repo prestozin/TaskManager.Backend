@@ -1,5 +1,5 @@
 ﻿namespace TaskManager.Application.DTOs.Auth.Response;
 
-public class UserLoginResponse : AuthBaseResponse
+public class LoginRequest : AuthBaseResponse
 {
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.DTOs.User.Request;
 using TaskManager.Application.Interfaces;
+using TaskManager.Application.Validators.User;
 
 namespace TaskManager.Api.Controllers;
 
@@ -47,6 +48,18 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeleteUserAsync(string password)
     {
         var result = await _userService.DeleteUserAsync(password);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPatch("ChangePassword")]
+    public async Task<IActionResult> ChangePasswordAsync(ChangeUserPasswordRequest request)
+    {
+        var result = await _userService.ChangePasswordAsync(request);
 
         if (!result.IsSuccess)
             return NotFound(result);

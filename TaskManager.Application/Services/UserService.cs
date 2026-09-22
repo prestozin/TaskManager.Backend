@@ -62,13 +62,39 @@ public class UserService : IUserService
         if (user == null)
             return ResultResponse<string>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Usuário"));
 
-        bool validPassword = BCrypt.Net.BCrypt.Verify(userPassword, user.HashPassword);
+        bool isValidPassword = BCrypt.Net.BCrypt.Verify(userPassword, user.HashPassword);
 
-        if (!validPassword)
+        if (!isValidPassword)
             return ResultResponse<string>.Failure(Messages.PASSWORD_INVALID);
 
         await _userRepository.DeleteUserAsync(user);
             return ResultResponse<string>.Success(Messages.USER_DELETED_SUCCESSFULLY);
+    }
+
+    public async Task<ResultResponse<string>> ChangePasswordAsync(ChangeUserPasswordRequest request)
+    {
+        ChangeUserPasswordValidator validator = new ChangeUserPasswordValidator();
+        await validator.ValidateAndThrowAsync(request);
+
+        var user = await _userRepository.GetUserByIdAsync(UserId);
+
+        if (user == null)
+            return ResultResponse<string>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Usuário"));
+
+        bool isValidPassword = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.HashPassword);
+
+        if (!isValidPassword)
+            return ResultResponse<string>.Failure(Messages.PASSWORD_INVALID);
+
+        bool isSamePassword = BCrypt.Net.BCrypt.Verify(request.NewPassword, user.HashPassword);
+
+        if (isSamePassword)
+            return ResultResponse<string>.Failure(Messages.NEW_PASSWORD_MUST_BE_DIFFERENT);
+
+        user.HashPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+        await _userRepository.EditUserByIdAsync(user);
+        return ResultResponse<string>.Success(Messages.USER_UPDATED_SUCCESSFULLY);
     }
 }
 
