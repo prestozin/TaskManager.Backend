@@ -42,4 +42,16 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
+    [HttpDelete("DeleteUser")]
+    public async Task<IActionResult> DeleteUserAsync(string password)
+    {
+        var result = await _userService.DeleteUserAsync(password);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
 }

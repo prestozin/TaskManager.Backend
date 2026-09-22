@@ -35,7 +35,8 @@ public class ApplicationDbContext : DbContext
 
             entity.HasOne(task => task.User)
                 .WithMany(user => user.Tasks)
-                .HasForeignKey(task => task.UserId);
+                .HasForeignKey(task => task.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(task => task.TaskStatus)
                 .WithMany()
