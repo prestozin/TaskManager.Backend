@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Mapster;
 using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Task.Report;
 using TaskManager.Application.DTOs.Task.Request;
 using TaskManager.Application.DTOs.Task.Response;
 using TaskManager.Application.Interfaces;
@@ -26,7 +27,7 @@ public class TaskService : ITaskService
 
     }
 
-    public async Task<ResultResponse<TaskResponse>> GetTaskAsync(Guid taskId)
+    public async Task<ResultResponse<TaskResponse>> GetTaskByIdAsync(Guid taskId)
     {
         if (taskId == Guid.Empty || UserId == Guid.Empty)
             return ResultResponse<TaskResponse>.Failure(string.Format(Messages.TASK_FETCH_FAILED));
@@ -46,7 +47,7 @@ public class TaskService : ITaskService
         if (UserId == Guid.Empty || pagedParams == null)
             return ResultResponse<PagedResultDto<TaskResponse>>.Failure(string.Format(Messages.TASK_NOT_FOUND));
 
-        var (tasks, totalCount) = await _taskRepository.GetPaged(UserId, pagedParams);
+        var (tasks, totalCount) = await _taskRepository.GetPagedAsync(UserId, pagedParams);
 
         List<TaskResponse> tasksDtos = tasks.Adapt<List<TaskResponse>>();
 
@@ -148,5 +149,51 @@ public class TaskService : ITaskService
 
         return ResultResponse<TaskSelectablesResponse>.Success(selectablesDto);
     }
+
+    public async Task<ResultResponse<TaskReportResponse>> GetReportAsync(ReportPagedParams reportParams)
+    {
+        if (UserId == Guid.Empty || reportParams == null)
+            return ResultResponse<TaskReportResponse>.Failure(Messages.TASK_NOT_FOUND);
+
+        var tasks = (await _taskRepository.GetReportAsync(UserId, reportParams)).ToList();
+
+
+        var report = new TaskReportResponse
+        {
+            TotalTasks = tasks.Count,
+            Status = BuildReport(tasks, tasks.Count, true),
+            Priority = BuildReport(tasks, tasks.Count, false)
+        };
+
+        return ResultResponse<TaskReportResponse>.Success(report);
+    }
+
+    private List<ReportCategoryResponse> BuildReport(IEnumerable<TaskEntity> tasks, int totalTasks, bool isStatus)
+    {
+        var statusReport = tasks
+            .Select(task => new { Id = task.StatusId, Name = task.TaskStatus.Name });
+
+        var priorityReport = tasks
+            .Select(task => new { Id = task.PriorityId, Name = task.TaskPriority.Name });
+
+        var report = isStatus ? statusReport: priorityReport;
+
+        return report
+            .GroupBy(item => new { item.Id, item.Name })
+            .Select(group => BuildReportCategory(group.Key.Id, group.Key.Name, group.Count(),totalTasks))
+            .ToList();
+    }
+
+    private ReportCategoryResponse BuildReportCategory(int id, string name, int count, int totalTasks)
+    {
+        return new ReportCategoryResponse
+        {
+            Id = id,
+            Name = name,
+            Count = count,
+            Percentage = totalTasks == 0 ? 0 : Math.Round((decimal)count / totalTasks * 100, 2)
+        };
+    }
+
 }
 

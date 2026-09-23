@@ -2,6 +2,7 @@
 using TaskManager.Core.Interfaces;
 using TaskManager.Core.Shared;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Application.DTOs.Task.Report;
 
 namespace TaskManager.Infra.Data.Repositories;
 
@@ -27,7 +28,7 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetPaged(Guid userId, TaskPagedParams pagedParams)
+    public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetPagedAsync(Guid userId, TaskPagedParams pagedParams)
     {
         var query = _context.Tasks.Where(t => t.UserId == userId);
 
@@ -97,5 +98,40 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
     public async Task<List<TaskPriority>> GetTaskPrioritiesAsync()
     {
         return await _context.Priorities.ToListAsync();
+    }
+
+    public async Task<IEnumerable<TaskEntity>> GetReportAsync(Guid userId, ReportPagedParams reportParams)
+    {
+        var query = _context.Tasks
+            .AsNoTracking()
+            .Where(t => t.UserId == userId);
+
+        query = ApplyReportFilters(query, reportParams);
+
+        return await query
+            .Include(t => t.TaskStatus)
+            .Include(t => t.TaskPriority)
+            .ToListAsync();
+    }
+
+    private IQueryable<TaskEntity> ApplyReportFilters(IQueryable<TaskEntity> query, ReportPagedParams reportParams)
+    {
+        if (reportParams.StartDate.HasValue)
+        {
+            var startDate = reportParams.StartDate.Value.Date;
+
+            query = query.Where(task =>
+                task.CreatedAt >= startDate);
+        }
+
+        if (reportParams.EndDate.HasValue)
+        {
+            var endDate = reportParams.EndDate.Value.Date.AddDays(1);
+
+            query = query.Where(task =>
+                task.CreatedAt < endDate);
+        }
+
+        return query;
     }
 }
