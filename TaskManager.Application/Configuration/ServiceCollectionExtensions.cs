@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IReportService, ReportService>();
 
         return services;
     }

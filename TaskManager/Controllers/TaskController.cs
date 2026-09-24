@@ -90,17 +90,5 @@ public class TaskController : ControllerBase
 
         return Ok(result);
     }
-
-    [Authorize]
-    [HttpGet("GetReport")]
-    public async Task<IActionResult> GetReportAsync([FromQuery] ReportPagedParams reportParams)
-    {
-        var result = await _taskService.GetReportAsync(reportParams);
-
-        if (!result.IsSuccess)
-            return NotFound(result);
-
-        return Ok(result);
-    }
 }
 
