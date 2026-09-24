@@ -5,6 +5,7 @@ using TaskManager.Application.DTOs;
 using TaskManager.Application.DTOs.Task.Report;
 using TaskManager.Application.DTOs.Task.Request;
 using TaskManager.Application.Interfaces;
+using TaskManager.Application.Services;
 using TaskManager.Core.Shared;
 
 namespace TaskManager.Api.Controllers;
@@ -84,6 +85,19 @@ public class TaskController : ControllerBase
     public async Task<IActionResult> GetSelectablesAsync()
     {
         var result = await _taskService.GetSelectablesAsync();
+
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+
+    [Authorize]
+    [HttpGet("GetReport")]
+    public async Task<IActionResult> GetReportAsync([FromQuery] ReportPagedParams reportParams)
+    {
+        var result = await _taskService.GetReportAsync(reportParams);
 
         if (!result.IsSuccess)
             return NotFound(result);

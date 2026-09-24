@@ -15,4 +15,5 @@ public interface ITaskService
     Task<ResultResponse<string>> EditTaskAsync(EditTaskRequest dto);
     Task<ResultResponse<string>> DeleteTaskAsync(DeleteTaskRequest request);
     Task<ResultResponse<TaskSelectablesResponse>> GetSelectablesAsync();
+    Task<ResultResponse<TaskReportResponse>> GetReportAsync(ReportPagedParams pagedParams);
 }
