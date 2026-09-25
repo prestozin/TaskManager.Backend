@@ -7,4 +7,5 @@ public class TaskReportResponse
     public int TotalTasks { get; set; }
     public List<ReportCategoryResponse> Status { get; set; } = [];
     public List<ReportCategoryResponse> Priority { get; set; } = [];
+    public List<TaskResponse> Tasks { get; set; } = [];
 }

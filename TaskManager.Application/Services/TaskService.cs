@@ -157,12 +157,16 @@ public class TaskService : ITaskService
 
         var tasks = (await _taskRepository.GetReportAsync(UserId, reportParams)).ToList();
 
+        var pagedParams = reportParams.Adapt<TaskPagedParams>();
+
+        var (pagedTasks, _) = await _taskRepository.GetPagedAsync(UserId, pagedParams);
 
         var report = new TaskReportResponse
         {
             TotalTasks = tasks.Count,
             Status = BuildReport(tasks, tasks.Count, true),
-            Priority = BuildReport(tasks, tasks.Count, false)
+            Priority = BuildReport(tasks, tasks.Count, false),
+            Tasks = pagedTasks.Adapt<List<TaskResponse>>()
         };
 
         return ResultResponse<TaskReportResponse>.Success(report);
