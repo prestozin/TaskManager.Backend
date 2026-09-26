@@ -54,12 +54,10 @@ public class TaskRepository : BaseRepository<TaskEntity>, ITaskRepository
     {
         Enum.TryParse(sort, true, out ETaskSort taskSort);
 
-        return sort switch
+        return taskSort switch
         {
-            nameof(ETaskSort.TaskPriority) => nameof(TaskEntity.PriorityId),
-
-            nameof(ETaskSort.TaskStatus)=> nameof(TaskEntity.StatusId),
-
+            ETaskSort.TaskPriority => nameof(TaskEntity.PriorityId),
+            ETaskSort.TaskStatus => nameof(TaskEntity.StatusId),
             _ => nameof(TaskEntity.CreatedAt)
         };
     }

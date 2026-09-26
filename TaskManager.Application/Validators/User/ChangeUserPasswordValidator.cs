@@ -10,8 +10,11 @@ public class ChangeUserPasswordValidator : AbstractValidator<ChangeUserPasswordR
     public ChangeUserPasswordValidator()
     {
         RuleFor(x => x.OldPassword)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
-                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "senha atual"));
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "senha atual"))
+            .MaximumLength(Constants.PASSWORD_MAX_LENGTH)
+                .WithMessage(string.Format(Messages.FIELD_MAX_LENGTH, "senha atual", Constants.PASSWORD_MAX_LENGTH));
 
         RuleFor(x => x.NewPassword)
             .Cascade(CascadeMode.Stop)

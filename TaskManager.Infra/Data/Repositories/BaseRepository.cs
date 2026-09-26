@@ -16,7 +16,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
             return query;
 
         var parameter = Expression.Parameter(typeof(T), "x"); //cria um parametro chamado "x" do tipo T
-        var property = Expression.Property(parameter, sort); //acessa a propriedade dentro do sort desse parametro(x.sort)
+        var property = Expression.Property(parameter, propertyInfo); //acessa a propriedade dentro do sort desse parametro(x.sort)
         var lambda = Expression.Lambda(property, parameter); // junta o parametro + propriedade com um lambda entre eles (x => x.sort)
 
         var methods = typeof(Queryable).GetMethods(); //busca todos os metodos de queryable
