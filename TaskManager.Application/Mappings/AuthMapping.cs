@@ -4,9 +4,9 @@ using TaskManager.Application.DTOs.Auth.Response;
 using TaskManager.Application.DTOs.Auth.Request;
 namespace TaskManager.Application.Mappings;
 
-public class AuthMapping 
+public class AuthMapping : IRegister
 {
-    public void RegisterMapping(TypeAdapterConfig config)
+    public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<CreateUserRequest, User>()
             .Ignore(dest => dest.Id)

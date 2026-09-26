@@ -67,7 +67,7 @@ public class TaskService : ITaskService
 
         await _taskRepository.CreateTaskAsync(newTask);
 
-        return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS), "Tarefa criada");
+        return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Tarefa criada"));
     }
     public async Task<ResultResponse<string>> EditTaskAsync(EditTaskRequest request)
     {
@@ -83,7 +83,7 @@ public class TaskService : ITaskService
 
         await _taskRepository.EditTaskAsync(task);
 
-        return ResultResponse<string>.Success(Messages.OPERATION_SUCCESS, "Tarefa atualizada");
+        return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Tarefa atualizada"));
     }
 
     public async Task<ResultResponse<string>> DeleteTaskAsync(DeleteTaskRequest request)
@@ -109,7 +109,10 @@ public class TaskService : ITaskService
 
         int notFoundCount = request.TaskId!.Count - deletedTasks.Count;
 
-        return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_SUCCESSFULLY,deletedTasks.Count));
+        if (notFoundCount > 0)
+            return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_PARTIALLY, deletedTasks.Count, notFoundCount));
+
+        return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_SUCCESSFULLY, deletedTasks.Count));
     }
 
     public async Task<ResultResponse<TaskSelectablesResponse>> GetSelectablesAsync()

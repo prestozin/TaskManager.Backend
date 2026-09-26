@@ -1,6 +1,5 @@
 ﻿using TaskManager.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using TaskManager.Application.DTOs.Auth.Response;
 using TaskManager.Application.DTOs.Auth.Request;
 
 namespace TaskManager.Api.Controllers;

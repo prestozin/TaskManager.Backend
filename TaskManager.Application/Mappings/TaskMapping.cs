@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using TaskManager.Application.DTOs;
-using TaskManager.Application.DTOs.Task;
 using TaskManager.Application.DTOs.Task.Report;
 using TaskManager.Application.DTOs.Task.Request;
 using TaskManager.Application.DTOs.Task.Response;

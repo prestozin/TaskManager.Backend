@@ -13,7 +13,7 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
             .Must(name => !string.IsNullOrWhiteSpace(name))
                 .WithMessage(string.Format(Messages.FIELD_REQUIRED, "nome"))
             .Length(Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH)
-                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "nome", Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH));
+                .WithMessage(string.Format(Messages.FIELD_LENGTH, "nome", Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH));
 
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)

@@ -7,6 +7,10 @@ namespace TaskManager.Application.Validators.Task;
 
 public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskRequest
 {
+    public BaseTaskValidator()
+    {
+        SetupCommonRules();
+    }
     protected void SetupCommonRules()
     {
         RuleFor(x => x.Title)
@@ -25,20 +29,13 @@ public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskReque
             .NotNull()
                 .WithMessage(string.Format(Messages.FIELD_REQUIRED, "status"))
             .Must(statusId => statusId.HasValue && Enum.IsDefined(typeof(ETaskStatus), statusId.Value))
-                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "status"));
+                .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
 
         RuleFor(x => x.PriorityId)
             .Cascade(CascadeMode.Stop)
             .NotNull()
                 .WithMessage(string.Format(Messages.FIELD_REQUIRED, "prioridade"))
             .Must(priorityId => priorityId.HasValue && Enum.IsDefined(typeof(ETaskPriority), priorityId.Value))
-                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "prioridade"));
+                .WithMessage(string.Format(Messages.FIELD_INVALID, "prioridade"));
     }
-
-    public BaseTaskValidator()
-    {
-        SetupCommonRules();
-    }
-
-
 }

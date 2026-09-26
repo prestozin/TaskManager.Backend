@@ -10,6 +10,7 @@ using TaskManager.Application.DTOs.Auth.Request;
 using TaskManager.Application.DTOs.Auth.Response;
 using TaskManager.Application.Interfaces;
 using TaskManager.Application.Validators;
+using TaskManager.Application.Validators.Auth;
 using TaskManager.Core.Constants;
 using TaskManager.Core.Entities;
 using TaskManager.Core.Interfaces;
@@ -24,7 +25,7 @@ public class AuthService : IAuthService
         _userRepository = userRepository;
         _configuration = configuration;
     }
-    public async Task<ResultResponse<CreateUserRequest>> CreateUserAsync(CreateUserRequest request)
+    public async Task<ResultResponse<string>> CreateUserAsync(CreateUserRequest request)
     {
         CreateUserValidator validator = new CreateUserValidator();
         await validator.ValidateAndThrowAsync(request);
@@ -32,24 +33,27 @@ public class AuthService : IAuthService
         bool userExists = await _userRepository.UserExistsAsync(request.Email);
 
         if (userExists)
-            return ResultResponse<CreateUserRequest>.Failure(string.Format(Messages.RESOURCE_ALREADY_EXISTS, "Usuário"));
+            return ResultResponse<string>.Failure(Messages.RESOURCE_ALREADY_EXISTS, "Usuário");
 
         var newUser = request.Adapt<User>();
 
         newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
         await _userRepository.AddUserAsync(newUser);
-        return ResultResponse<CreateUserRequest>.Success(string.Format(Messages.OPERATION_SUCCESS, "Usuário criado"));
+        return ResultResponse<string>.Success(Messages.OPERATION_SUCCESS, "Usuário criado");
     }
 
-    public async Task<ResultResponse<LoginResponse>> LoginAsync(LoginRequest userLoginDto)
+    public async Task<ResultResponse<LoginResponse>> LoginAsync(LoginRequest request)
     {
-        User? user = await _userRepository.GetUserByEmailAsync(userLoginDto.Email);
+        LoginValidator validator = new LoginValidator();
+        await validator.ValidateAndThrowAsync(request);
+
+        User? user = await _userRepository.GetUserByEmailAsync(request.Email);
 
         if (user == null)
             return ResultResponse<LoginResponse>.Failure(Messages.INVALID_CREDENTIALS);
 
-        bool isValidPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.HashPassword);
+        bool isValidPassword = BCrypt.Net.BCrypt.Verify(request.Password, user.HashPassword);
 
         if (!isValidPassword)
             return ResultResponse<LoginResponse>.Failure(Messages.INVALID_CREDENTIALS);

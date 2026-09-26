@@ -1,5 +1,4 @@
-﻿using TaskManager.Application.DTOs.Task.Report;
-using TaskManager.Core.Entities;
+﻿using TaskManager.Core.Entities;
 using TaskManager.Core.Shared;
 
 namespace TaskManager.Core.Interfaces;

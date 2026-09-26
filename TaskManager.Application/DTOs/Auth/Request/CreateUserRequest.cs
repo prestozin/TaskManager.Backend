@@ -1,8 +1,6 @@
-﻿using TaskManager.Application.DTOs.Auth.Response;
+﻿namespace TaskManager.Application.DTOs.Auth.Request;
 
-namespace TaskManager.Application.DTOs.Auth.Request;
-
-public class CreateUserRequest : AuthBaseResponse
+public class CreateUserRequest : AuthBaseRequest
 {
     public string Name { get; set; } = string.Empty;
 }

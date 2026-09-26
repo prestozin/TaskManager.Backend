@@ -11,7 +11,7 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
-                .WithMessage(string.Format(Messages.FIELD_MINIMUM_VALUE, "página", "1"));
+                .WithMessage(string.Format(Messages.FIELD_MINIMUM_VALUE, "página", 1));
 
         RuleFor(x => x.PageSize)
             .InclusiveBetween(Constants.MIN_PAGE_SIZE, Constants.MAX_PAGE_SIZE)
@@ -27,7 +27,7 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
 
         RuleFor(x => x.TaskStatusId)
             .Must(IsValidStatus)
-                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "status"));
+                .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
 
         RuleFor(x => x.TaskPriorityId)
             .Must(IsValidPriority)

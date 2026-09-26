@@ -29,6 +29,7 @@ services:
       ASPNETCORE_URLS: http://+:8080
 
       ConnectionStrings__DefaultConnection: "Server=database,1433;Database=TaskManager;User Id=sa;Password=${DB_SA_PASSWORD};TrustServerCertificate=True"
+      Jwt__Key: "${JWT_KEY}"
 
     depends_on:
       - database

@@ -1,6 +1,6 @@
-﻿namespace TaskManager.Application.DTOs.Auth.Response;
+﻿namespace TaskManager.Application.DTOs.Auth.Request;
 
-public class AuthBaseResponse
+public class AuthBaseRequest
 {
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;

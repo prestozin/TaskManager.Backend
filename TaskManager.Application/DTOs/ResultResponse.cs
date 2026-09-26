@@ -17,28 +17,23 @@ public class ResultResponse<T>
         Data = data;
     }
 
-    public static ResultResponse<T> Success(T? data, string? message = "Operation completed successfully")
+    public static ResultResponse<T> Success(T? data, string? message = "Operação realizada com sucesso")
     {
         return new ResultResponse<T>(true, message, data);
     }
 
-    public static ResultResponse<T> Success(string? message = "Operation completed successfully")
+    public static ResultResponse<T> Success(string? message = "Operação realizada com sucesso")
     {
         return new ResultResponse<T>(true, message, default);
     }
 
-    public static ResultResponse<T> Failure(T? data, string? message = "Operation failed")
+    public static ResultResponse<T> Failure(T? data, string? message = "Falha ao realizar a operação")
     {
         return new ResultResponse<T>(false, message, data);
     }
 
-    public static ResultResponse<T> Failure(string? message = "Operation failed")
+    public static ResultResponse<T> Failure(string? message = "Falha ao realizar a operação")
     {
         return new ResultResponse<T>(false, message, default);
-    }
-
-    public static ResultResponse<object> ValidationFailure(IEnumerable<ValidationFailure> errors)
-    {
-        throw new NotImplementedException();
     }
 }

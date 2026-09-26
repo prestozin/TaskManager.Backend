@@ -1,13 +1,20 @@
 ﻿
 using System.Linq.Expressions;
+using System.Reflection;
 using TaskManager.Core.Interfaces;
 
 namespace TaskManager.Infra.Data.Repositories;
 
-public class BaseRepository<T> : IBaseRepository where T : class
+public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
-    public IQueryable<T> ApplySort<T>(IQueryable<T> query, string sort, string order)
+    public IQueryable<T> ApplySort(IQueryable<T> query, string sort, string order)
     {
+        PropertyInfo? propertyInfo = typeof(T)
+           .GetProperty(sort, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+        if (propertyInfo == null)
+            return query;
+
         var parameter = Expression.Parameter(typeof(T), "x"); //cria um parametro chamado "x" do tipo T
         var property = Expression.Property(parameter, sort); //acessa a propriedade dentro do sort desse parametro(x.sort)
         var lambda = Expression.Lambda(property, parameter); // junta o parametro + propriedade com um lambda entre eles (x => x.sort)
@@ -24,6 +31,6 @@ public class BaseRepository<T> : IBaseRepository where T : class
 
         var result = genericOrderByMethod.Invoke(null,new object[] { query, lambda } ); //executa o metodo criado ( query.OrderBy() ), utilizando o lambda criado acima ( query.OrderBy(x => x.sort) )
 
-        return (IQueryable<T>)result;
+        return (IQueryable<T>)result!;
     }
 }

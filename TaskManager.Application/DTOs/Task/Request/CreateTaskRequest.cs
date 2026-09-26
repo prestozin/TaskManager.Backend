@@ -1,6 +1,4 @@
-﻿using TaskManager.Application.DTOs.Task.Request;
-
-namespace TaskManager.Application.DTOs;
+﻿namespace TaskManager.Application.DTOs.Task.Request;
 
 public class CreateTaskRequest : BaseTaskRequest
 {

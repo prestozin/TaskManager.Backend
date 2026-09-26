@@ -1,12 +1,12 @@
-﻿using TaskManager.Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManager.Core.Entities;
+using TaskManager.Core.Enums;
 using TaskManager.Core.Interfaces;
 using TaskManager.Core.Shared;
-using Microsoft.EntityFrameworkCore;
-using TaskManager.Application.DTOs.Task.Report;
 
 namespace TaskManager.Infra.Data.Repositories;
 
-public class TaskRepository : BaseRepository<Task>, ITaskRepository
+public class TaskRepository : BaseRepository<TaskEntity>, ITaskRepository
 {
     private readonly ApplicationDbContext _context;
     public TaskRepository(ApplicationDbContext context)
@@ -34,11 +34,13 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
              .AsNoTracking()
              .Where(task => task.UserId == userId);
 
+        string sortProperty = GetSortProperty(pagedParams.Sort);
+
         query = ApplyFilters(query, pagedParams);
 
         int totalCount = await query.CountAsync();
 
-        var tasks = await ApplySort(query, pagedParams.Sort, pagedParams.Order)
+        var tasks = await ApplySort(query, sortProperty, pagedParams.Order!)
                             .Include(t => t.TaskStatus)
                             .Include(t => t.TaskPriority)
                             .Skip((pagedParams.PageNumber - 1) * pagedParams.PageSize)
@@ -46,6 +48,18 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
                             .ToListAsync();
 
         return (tasks, totalCount);
+    }
+
+    private static string GetSortProperty(string? sort)
+    {
+        return sort switch
+        {
+            nameof(ETaskSort.TaskPriority) => nameof(TaskEntity.PriorityId),
+
+            nameof(ETaskSort.TaskStatus)=> nameof(TaskEntity.StatusId),
+
+            _ => nameof(TaskEntity.CreatedAt)
+        };
     }
 
     private IQueryable<TaskEntity> ApplyFilters(IQueryable<TaskEntity> query, TaskPagedParams pagedParams)

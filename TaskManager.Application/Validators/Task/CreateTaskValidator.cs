@@ -1,4 +1,4 @@
-﻿using TaskManager.Application.DTOs;
+﻿using TaskManager.Application.DTOs.Task.Request;
 using TaskManager.Application.Validators.Task;
 
 

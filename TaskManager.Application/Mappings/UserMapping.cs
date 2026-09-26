@@ -5,9 +5,9 @@ using TaskManager.Core.Entities;
 
 namespace TaskManager.Application.Mappings;
 
-public class UserMapping
+public class UserMapping : IRegister
 {
-    public void RegisterMapping(TypeAdapterConfig config)
+    public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<User, UserResponse>();
 

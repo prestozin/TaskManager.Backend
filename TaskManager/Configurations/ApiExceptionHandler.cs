@@ -24,7 +24,7 @@ public class ApiExceptionHandler : IExceptionHandler
 
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-                response = ResultResponse<object>.ValidationFailure(validationException.Errors);
+                response = ResultResponse<object>.Failure(validationException.Errors);
 
                 break;
 

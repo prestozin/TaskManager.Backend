@@ -1,5 +1,5 @@
-﻿namespace TaskManager.Application.DTOs.Task.Report
-{
+﻿namespace TaskManager.Core.Shared;
+
     public class ReportPagedParams
     {
         public DateTime? StartDate { get; set; }
@@ -7,4 +7,4 @@
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }
-}
+
