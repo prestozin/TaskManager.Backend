@@ -21,7 +21,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
         var methods = typeof(Queryable).GetMethods(); //busca todos os metodos de queryable
 
-        string orderType = order.Equals("desc", StringComparison.OrdinalIgnoreCase) ? "OrderByDescending" : "OrderBy"; //verifica o tipo do order para utilizar na geração do metodo
+        string orderType = string.Equals(order, "desc", StringComparison.OrdinalIgnoreCase) ? "OrderByDescending" : "OrderBy"; //verifica o tipo do order para utilizar na geração do metodo
 
         var orderByMethod = methods.First(m => m.Name == orderType && 
                             m.IsGenericMethodDefinition &&  m.GetGenericArguments().Length == 2 && 

@@ -52,6 +52,8 @@ public class TaskRepository : BaseRepository<TaskEntity>, ITaskRepository
 
     private static string GetSortProperty(string? sort)
     {
+        Enum.TryParse(sort, true, out ETaskSort taskSort);
+
         return sort switch
         {
             nameof(ETaskSort.TaskPriority) => nameof(TaskEntity.PriorityId),

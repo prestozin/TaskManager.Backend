@@ -33,14 +33,14 @@ public class AuthService : IAuthService
         bool userExists = await _userRepository.UserExistsAsync(request.Email);
 
         if (userExists)
-            return ResultResponse<string>.Failure(Messages.RESOURCE_ALREADY_EXISTS, "Usuário");
+            return ResultResponse<string>.Failure(string.Format(Messages.RESOURCE_ALREADY_EXISTS, "Usuário"));
 
         var newUser = request.Adapt<User>();
 
         newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
         await _userRepository.AddUserAsync(newUser);
-        return ResultResponse<string>.Success(Messages.OPERATION_SUCCESS, "Usuário criado");
+        return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Usuário criado"));
     }
 
     public async Task<ResultResponse<LoginResponse>> LoginAsync(LoginRequest request)
@@ -80,7 +80,7 @@ public class AuthService : IAuthService
         var token = new JwtSecurityToken(issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
+            expires: DateTime.UtcNow.AddHours(Constants.JWT_EXPIRATION_HOURS),
             signingCredentials: credentials
         );
 
