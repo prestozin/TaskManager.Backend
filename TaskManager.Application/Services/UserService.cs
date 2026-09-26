@@ -37,6 +37,8 @@ public class UserService : IUserService
 
     public async Task<ResultResponse<string>> EditUserAsync(EditUserRequest request)
     {
+        request.Name = request.Name.Trim();
+
         EditUserValidator validator = new EditUserValidator();
         await validator.ValidateAndThrowAsync(request);
 

@@ -27,6 +27,9 @@ public class AuthService : IAuthService
     }
     public async Task<ResultResponse<string>> CreateUserAsync(CreateUserRequest request)
     {
+        request.Name = request.Name.Trim();
+        request.Email = request.Email.Trim().ToLowerInvariant();
+
         CreateUserValidator validator = new CreateUserValidator();
         await validator.ValidateAndThrowAsync(request);
 
@@ -45,6 +48,8 @@ public class AuthService : IAuthService
 
     public async Task<ResultResponse<LoginResponse>> LoginAsync(LoginRequest request)
     {
+        request.Email = request.Email.Trim().ToLowerInvariant();
+
         LoginValidator validator = new LoginValidator();
         await validator.ValidateAndThrowAsync(request);
 
