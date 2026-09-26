@@ -20,11 +20,11 @@ public class TaskEntity
 
     public User? User { get; set; }
 
-    public int StatusId { get; set; } = (int)ETaskStatus.Pending;
+    public int StatusId { get; set; } 
 
     public TaskStatus TaskStatus { get; set; } = null!;
 
-    public int PriorityId { get; set; } = (int)ETaskPriority.Media;
+    public int PriorityId { get; set; }
 
     public TaskPriority TaskPriority { get; set; } = null!;
 }

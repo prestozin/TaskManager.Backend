@@ -45,7 +45,9 @@ public class TaskService : ITaskService
 
     public async Task<ResultResponse<PagedResultDto<TaskResponse>>> GetPagedAsync(TaskPagedParams pagedParams)
     {
-        TaskPagedParamsValidator validator = new TaskPagedParamsValidator();
+        var (statusIds, priorityIds) = await GetSelectableIdsAsync();
+
+        TaskPagedParamsValidator validator = new TaskPagedParamsValidator(statusIds, priorityIds);
         await validator.ValidateAndThrowAsync(pagedParams);
 
         var (tasks, totalCount) = await _taskRepository.GetPagedAsync(UserId, pagedParams);
@@ -59,7 +61,12 @@ public class TaskService : ITaskService
 
     public async Task<ResultResponse<string>> CreateTaskAsync(CreateTaskRequest request)
     {
-        CreateTaskValidator validator = new CreateTaskValidator();
+        request.Title = request.Title?.Trim();
+        request.Description = string.IsNullOrWhiteSpace(request.Description) ? null: request.Description.Trim();
+
+        var (statusIds, priorityIds) = await GetSelectableIdsAsync();
+
+        CreateTaskValidator validator = new CreateTaskValidator(statusIds, priorityIds);
         await validator.ValidateAndThrowAsync(request);
 
         TaskEntity newTask = request.Adapt<TaskEntity>();
@@ -71,7 +78,12 @@ public class TaskService : ITaskService
     }
     public async Task<ResultResponse<string>> EditTaskAsync(EditTaskRequest request)
     {
-        EditTaskValidator validator = new EditTaskValidator();
+        request.Title = request.Title?.Trim();
+        request.Description = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim();
+
+        var (statusIds, priorityIds) = await GetSelectableIdsAsync();
+
+        EditTaskValidator validator = new EditTaskValidator(statusIds, priorityIds);
         await validator.ValidateAndThrowAsync(request);
 
         TaskEntity? task = await _taskRepository.GetTaskByIdAsync(request.Id, UserId);
@@ -84,6 +96,19 @@ public class TaskService : ITaskService
         await _taskRepository.EditTaskAsync(task);
 
         return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Tarefa atualizada"));
+    }
+
+    private async Task<(List<int> StatusIds,List<int> PriorityIds)> GetSelectableIdsAsync()
+    {
+        List<int> statusIds = (await _taskRepository.GetTaskStatusesAsync())
+            .Select(status => status.Id)
+            .ToList();
+
+        List<int> priorityIds = (await _taskRepository.GetTaskPrioritiesAsync())
+            .Select(priority => priority.Id)
+            .ToList();
+
+        return (statusIds, priorityIds);
     }
 
     public async Task<ResultResponse<string>> DeleteTaskAsync(DeleteTaskRequest request)

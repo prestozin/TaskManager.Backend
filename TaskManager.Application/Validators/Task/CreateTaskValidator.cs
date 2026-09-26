@@ -6,7 +6,8 @@ namespace TaskManager.Application.Validators;
 
 public class CreateTaskValidator : BaseTaskValidator<CreateTaskRequest>
 {
-    public CreateTaskValidator()
+    public CreateTaskValidator(List<int> statusIds, List<int> priorityIds) : base(statusIds, priorityIds)
     {
+
     }
 }

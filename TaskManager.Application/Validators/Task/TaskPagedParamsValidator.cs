@@ -7,7 +7,7 @@ namespace TaskManager.Application.Validators;
 
 public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
 {
-    public TaskPagedParamsValidator()
+    public TaskPagedParamsValidator(List<int> statusIds, List<int> priorityIds)
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
@@ -26,11 +26,11 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "direção da ordenação"));
 
         RuleFor(x => x.TaskStatusId)
-            .Must(IsValidStatus)
+            .Must(statusId =>! statusId.HasValue || statusIds.Contains(statusId.Value))
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
 
         RuleFor(x => x.TaskPriorityId)
-            .Must(IsValidPriority)
+            .Must(priorityId => !priorityId.HasValue || priorityIds.Contains(priorityId.Value))
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "prioridade"));
 
         RuleFor(x => x.Search)
@@ -56,22 +56,6 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
             return false;
 
         return Enum.TryParse<ESortOrder>(order, true, out _);
-    }
-
-    private static bool IsValidStatus(int? statusId)
-    {
-        if (!statusId.HasValue)
-            return true;
-
-        return Enum.IsDefined(typeof(ETaskStatus), statusId.Value);
-    }
-
-    private static bool IsValidPriority(int? priorityId)
-    {
-        if (!priorityId.HasValue)
-            return true;
-
-        return Enum.IsDefined(typeof(ETaskPriority), priorityId.Value);
     }
 
     private static bool HasValidDateRange(TaskPagedParams request)

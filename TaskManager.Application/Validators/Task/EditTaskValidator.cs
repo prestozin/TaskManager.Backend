@@ -8,7 +8,7 @@ namespace TaskManager.Application.Validators;
 
 public class EditTaskValidator : BaseTaskValidator<EditTaskRequest>
 {
-    public EditTaskValidator()
+    public EditTaskValidator(List<int> statusIds, List<int> priorityIds) : base(statusIds, priorityIds)
     {
         RuleFor(x => x.Id)
             .NotEmpty()
