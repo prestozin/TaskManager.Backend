@@ -28,7 +28,7 @@ public class UserService : IUserService
         var user = await _userRepository.GetUserByIdAsync(UserId);
 
         if (user == null)
-            return ResultResponse<UserResponse>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Usuário"));
+            return ResultResponse<UserResponse>.Failure(string.Format(Messages.RESOURCE_NOT_FOUND, "o usuário"));
 
         UserResponse userDto = user.Adapt<UserResponse>();
 
@@ -43,32 +43,32 @@ public class UserService : IUserService
         var user = await _userRepository.GetUserByIdAsync(UserId);
 
         if (user == null)
-            return ResultResponse<string>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Usuário"));
+            return ResultResponse<string>.Failure(string.Format(Messages.RESOURCE_NOT_FOUND, "o usuário"));
 
         request.Adapt(user);
 
         await _userRepository.EditUserByIdAsync(user);
 
-        return ResultResponse<string>.Success(Messages.USER_UPDATED_SUCCESSFULLY);
+        return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Usuário atualizado"));
     }
 
-    public async Task<ResultResponse<string>> DeleteUserAsync(string userPassword)
+    public async Task<ResultResponse<string>> DeleteUserAsync(DeleteUserRequest request)
     {
-        if (string.IsNullOrWhiteSpace(userPassword))
-            return ResultResponse<string>.Failure(string.Format(Messages.FIELD_REQUIRED, "Senha"));
+        DeleteUserValidator validator = new DeleteUserValidator();
+        await validator.ValidateAndThrowAsync(request);
 
         var user = await _userRepository.GetUserByIdAsync(UserId);
 
         if (user == null)
-            return ResultResponse<string>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Usuário"));
+            return ResultResponse<string>.Failure(string.Format(Messages.RESOURCE_NOT_FOUND, "O Usuário"));
 
-        bool isValidPassword = BCrypt.Net.BCrypt.Verify(userPassword, user.HashPassword);
+        bool isValidPassword = BCrypt.Net.BCrypt.Verify(request.Password, user.HashPassword);
 
         if (!isValidPassword)
             return ResultResponse<string>.Failure(Messages.PASSWORD_INVALID);
 
         await _userRepository.DeleteUserAsync(user);
-            return ResultResponse<string>.Success(Messages.USER_DELETED_SUCCESSFULLY);
+            return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Usuário deletado"));
     }
 
     public async Task<ResultResponse<string>> ChangePasswordAsync(ChangeUserPasswordRequest request)
@@ -79,7 +79,7 @@ public class UserService : IUserService
         var user = await _userRepository.GetUserByIdAsync(UserId);
 
         if (user == null)
-            return ResultResponse<string>.Failure(string.Format(Messages.FIELD_NOT_FOUND, "Usuário"));
+            return ResultResponse<string>.Failure(string.Format(Messages.RESOURCE_NOT_FOUND, "Usuário"));
 
         bool isValidPassword = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.HashPassword);
 
@@ -94,7 +94,7 @@ public class UserService : IUserService
         user.HashPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
 
         await _userRepository.EditUserByIdAsync(user);
-        return ResultResponse<string>.Success(Messages.USER_UPDATED_SUCCESSFULLY);
+        return ResultResponse<string>.Success(string.Format(Messages.OPERATION_SUCCESS, "Usuário atualizado"));
     }
 }
 

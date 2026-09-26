@@ -9,24 +9,4 @@ public class PagedParamsDto
     public int PageSize { get; set; } = 10;
     public string? Sort { get; set; } 
     public string? Order { get; set; } 
-
-    private bool ValidateOrder(string? order)
-    {
-        var acceptedValues = Constants.Constants.ORDER_ACCEPTED_VALUES;
-
-        if (string.IsNullOrWhiteSpace(order) || !acceptedValues.Contains(order))
-            return false;
-
-        return true;
-    }
-
-    private bool ValidateSort(string? sort)
-    {
-        var acceptedValues = Constants.Constants.SORT_ACCEPTED_VALUES;
-
-        if (string.IsNullOrWhiteSpace(sort) || !acceptedValues.Contains(sort))
-            return false;
-
-        return true;
-    }
 }

@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Application.DTOs;
+﻿using FluentValidation.Results;
+
+namespace TaskManager.Application.DTOs;
 
 public class ResultResponse<T>
 {
@@ -35,11 +37,8 @@ public class ResultResponse<T>
         return new ResultResponse<T>(false, message, default);
     }
 
-    public static ResultResponse<T> ValidationFailure(IEnumerable<FluentValidation.Results.ValidationFailure> errors)
+    public static ResultResponse<object> ValidationFailure(IEnumerable<ValidationFailure> errors)
     {
-        return new ResultResponse<T>(false, "Erro de validação", default)
-        {
-            Errors = errors.Select(x => x.ErrorMessage).ToList()
-        };
+        throw new NotImplementedException();
     }
 }

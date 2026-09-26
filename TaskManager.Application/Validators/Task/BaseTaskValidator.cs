@@ -10,22 +10,29 @@ public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskReque
     protected void SetupCommonRules()
     {
         RuleFor(x => x.Title)
-         .NotEmpty()
-             .WithMessage(Messages.TASK_TITLE_REQUIRED)
-         .Length(Constants.TASK_TITLE_MIN_LENGTH, Constants.TASK_TITLE_MAX_LENGTH)
-             .WithMessage(Messages.TASK_TITLE_LENGTH);
+            .Cascade(CascadeMode.Stop)
+            .Must(title => !string.IsNullOrWhiteSpace(title))
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "título"))
+            .Length(Constants.TASK_TITLE_MIN_LENGTH, Constants.TASK_TITLE_MAX_LENGTH)
+                .WithMessage(string.Format(Messages.FIELD_LENGTH, "título", Constants.TASK_TITLE_MIN_LENGTH,Constants.TASK_TITLE_MAX_LENGTH));
 
         RuleFor(x => x.Description)
             .MaximumLength(Constants.TASK_DESCRIPTION_MAX_LENGTH)
-                  .WithMessage(Messages.TASK_DESCRIPTION_MAX_LENGTH);
+                .WithMessage(string.Format(Messages.FIELD_MAX_LENGTH, "descrição", Constants.TASK_DESCRIPTION_MAX_LENGTH));
 
         RuleFor(x => x.StatusId)
-         .Must(ValidateStatus)
-             .WithMessage(Messages.TASK_STATUS_INVALID);
+            .Cascade(CascadeMode.Stop)
+            .NotNull()
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "status"))
+            .Must(statusId => statusId.HasValue && Enum.IsDefined(typeof(ETaskStatus), statusId.Value))
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "status"));
 
         RuleFor(x => x.PriorityId)
-        .Must(ValidatePriority)
-            .WithMessage(Messages.TASK_PRIORITY_INVALID);
+            .Cascade(CascadeMode.Stop)
+            .NotNull()
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "prioridade"))
+            .Must(priorityId => priorityId.HasValue && Enum.IsDefined(typeof(ETaskPriority), priorityId.Value))
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "prioridade"));
     }
 
     public BaseTaskValidator()
@@ -33,19 +40,5 @@ public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskReque
         SetupCommonRules();
     }
 
-    private bool ValidateStatus(int? statusId)
-    {
-        if (!statusId.HasValue)
-            return true;
 
-        return Enum.IsDefined(typeof(ETaskStatus), statusId.Value);
-    }
-
-    private bool ValidatePriority(int? priorityId)
-    {
-        if (!priorityId.HasValue)
-            return true;
-
-        return Enum.IsDefined(typeof(ETaskPriority), priorityId.Value);
-    }
 }

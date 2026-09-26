@@ -12,6 +12,6 @@ public class EditTaskValidator : BaseTaskValidator<EditTaskRequest>
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-                .WithMessage(Messages.TASK_ID_REQUIRED);
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "Id"));
     }
 }

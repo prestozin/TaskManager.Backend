@@ -30,7 +30,9 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
     public async Task<(IEnumerable<TaskEntity> tasks, int totalCount)> GetPagedAsync(Guid userId, TaskPagedParams pagedParams)
     {
-        var query = _context.Tasks.Where(t => t.UserId == userId);
+        IQueryable<TaskEntity> query = _context.Tasks
+             .AsNoTracking()
+             .Where(task => task.UserId == userId);
 
         query = ApplyFilters(query, pagedParams);
 
@@ -49,32 +51,25 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
     private IQueryable<TaskEntity> ApplyFilters(IQueryable<TaskEntity> query, TaskPagedParams pagedParams)
     {
         if (pagedParams.StartDate.HasValue)
-        {
-            var startDate = pagedParams.StartDate.Value.Date;
-            query = query.Where(t => t.CreatedAt >= startDate);
-        }
+            query = query.Where(task => task.CreatedAt >= pagedParams.StartDate.Value);
+        
 
-        if (pagedParams.EndDate.HasValue)
-        {
-            var endDate = pagedParams.EndDate.Value.Date.AddDays(1);
-            query = query.Where(t => t.CreatedAt < endDate);
-        }
+        if (pagedParams.EndDate.HasValue)        
+            query = query.Where(task => task.CreatedAt < pagedParams.EndDate.Value);
+        
 
-        if (!string.IsNullOrWhiteSpace(pagedParams.Search))
-        {
-            query = query.Where(t => t.Title.Contains(pagedParams.Search) || t.Description.Contains(pagedParams.Search));
-        }
+        if (!string.IsNullOrWhiteSpace(pagedParams.Search))        
+            query = query.Where(task => task.Title.Contains(pagedParams.Search) || 
+            (task.Description != null &&task.Description.Contains(pagedParams.Search)));
+        
 
-        if (pagedParams.TaskStatusId.HasValue)
-        {
+        if (pagedParams.TaskStatusId.HasValue)        
             query = query.Where(t => t.StatusId == pagedParams.TaskStatusId.Value);
-        }
+        
 
-        if (pagedParams.TaskPriorityId.HasValue)
-        {
+        if (pagedParams.TaskPriorityId.HasValue)       
             query = query.Where(t => t.PriorityId == pagedParams.TaskPriorityId.Value);
-        }
-
+        
         return query;
     }
 
@@ -92,12 +87,16 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
 
     public async Task<List<Core.Entities.TaskStatus>> GetTaskStatusesAsync()
     {
-        return await _context.Status.ToListAsync();
+        return await _context.Status
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<List<TaskPriority>> GetTaskPrioritiesAsync()
     {
-        return await _context.Priorities.ToListAsync();
+        return await _context.Priorities
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<TaskEntity>> GetReportAsync(Guid userId, ReportPagedParams reportParams)
@@ -117,21 +116,12 @@ public class TaskRepository : BaseRepository<Task>, ITaskRepository
     private IQueryable<TaskEntity> ApplyReportFilters(IQueryable<TaskEntity> query, ReportPagedParams reportParams)
     {
         if (reportParams.StartDate.HasValue)
-        {
-            var startDate = reportParams.StartDate.Value.Date;
-
-            query = query.Where(task =>
-                task.CreatedAt >= startDate);
-        }
+            query = query.Where(task => task.CreatedAt >= reportParams.StartDate.Value);
+        
 
         if (reportParams.EndDate.HasValue)
-        {
-            var endDate = reportParams.EndDate.Value.Date.AddDays(1);
-
-            query = query.Where(task =>
-                task.CreatedAt < endDate);
-        }
-
+            query = query.Where(task =>task.CreatedAt < reportParams.EndDate.Value);
+        
         return query;
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.DTOs.User.Request;
 using TaskManager.Application.Interfaces;
-using TaskManager.Application.Validators.User;
 
 namespace TaskManager.Api.Controllers;
 
@@ -45,12 +44,12 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpDelete("DeleteUser")]
-    public async Task<IActionResult> DeleteUserAsync(string password)
+    public async Task<IActionResult> DeleteUserAsync(DeleteUserRequest request)
     {
-        var result = await _userService.DeleteUserAsync(password);
+        var result = await _userService.DeleteUserAsync(request);
 
         if (!result.IsSuccess)
-            return NotFound(result);
+            return BadRequest(result);
 
         return Ok(result);
     }
@@ -62,7 +61,7 @@ public class UserController : ControllerBase
         var result = await _userService.ChangePasswordAsync(request);
 
         if (!result.IsSuccess)
-            return NotFound(result);
+            return BadRequest(result);
 
         return Ok(result);
     }

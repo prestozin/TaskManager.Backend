@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
        var result = await _authService.CreateUserAsync(dto);
 
         if(!result.IsSuccess)
-            return NotFound(result);
+            return Conflict(result);
 
         return Ok(result);
     }
@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(dto);
 
         if (!result.IsSuccess)
-            return NotFound(result);
+            return Unauthorized(result);
 
         return Ok(result);
     }

@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <File Path=".env" />
     <File Path="docker-compose.yml" />
     <Project Path="TaskManager.Application/TaskManager.Application.csproj" />
     <Project Path="TaskManager.Core/TaskManager.Core.csproj" />

@@ -6,7 +6,7 @@ services:
 
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "SuaSenhaForte@123"
+      MSSQL_SA_PASSWORD: "${DB_SA_PASSWORD}"
 
     ports:
       - "1433:1433"
@@ -28,7 +28,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
 
-      ConnectionStrings__DefaultConnection: "Server=database,1433;Database=TaskManager;User Id=sa;Password=SuaSenhaForte@123;TrustServerCertificate=True"
+      ConnectionStrings__DefaultConnection: "Server=database,1433;Database=TaskManager;User Id=sa;Password=${DB_SA_PASSWORD};TrustServerCertificate=True"
 
     depends_on:
       - database

@@ -9,23 +9,26 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
     public CreateUserValidator()
     {
         RuleFor(x => x.Name)
-          .NotEmpty()
-                .WithMessage(Messages.NAME_REQUIRED)
-          .Length(Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH)
-                .WithMessage(Messages.NAME_LENGTH);
+            .Cascade(CascadeMode.Stop)
+            .Must(name => !string.IsNullOrWhiteSpace(name))
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "nome"))
+            .Length(Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH)
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "nome", Constants.NAME_MIN_LENGTH, Constants.NAME_MAX_LENGTH));
 
         RuleFor(x => x.Email)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
-                .WithMessage(Messages.EMAIL_REQUIRED)
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "e-mail"))
             .EmailAddress()
-                .WithMessage(Messages.EMAIL_INVALID)
+                .WithMessage(string.Format(Messages.FIELD_INVALID, "e-mail"))
             .MaximumLength(Constants.EMAIL_MAX_LENGTH)
-                .WithMessage(Messages.EMAIL_MAX_LENGTH);
+                .WithMessage(string.Format(Messages.FIELD_MAX_LENGTH, "e-mail", Constants.EMAIL_MAX_LENGTH));
 
         RuleFor(x => x.Password)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
-                .WithMessage(Messages.PASSWORD_REQUIRED)
-           .Matches(Constants.PASSWORD_REGEX)
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "senha"))
+            .Matches(Constants.PASSWORD_REGEX)
                 .WithMessage(Messages.PASSWORD_RULES);
     }
 }

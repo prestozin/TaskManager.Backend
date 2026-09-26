@@ -32,14 +32,14 @@ public class AuthService : IAuthService
         bool userExists = await _userRepository.UserExistsAsync(request.Email);
 
         if (userExists)
-            return ResultResponse<CreateUserRequest>.Failure(string.Format(Messages.USER_ALREADY_EXISTS));
+            return ResultResponse<CreateUserRequest>.Failure(string.Format(Messages.RESOURCE_ALREADY_EXISTS, "Usuário"));
 
         var newUser = request.Adapt<User>();
 
         newUser.HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
         await _userRepository.AddUserAsync(newUser);
-        return ResultResponse<CreateUserRequest>.Success(string.Format(Messages.USER_CREATED_SUCCESSFULLY));
+        return ResultResponse<CreateUserRequest>.Success(string.Format(Messages.OPERATION_SUCCESS, "Usuário criado"));
     }
 
     public async Task<ResultResponse<LoginResponse>> LoginAsync(LoginRequest userLoginDto)
@@ -47,18 +47,15 @@ public class AuthService : IAuthService
         User? user = await _userRepository.GetUserByEmailAsync(userLoginDto.Email);
 
         if (user == null)
-            return ResultResponse<LoginResponse>.Failure(Messages.USER_NOT_FOUND);
+            return ResultResponse<LoginResponse>.Failure(Messages.INVALID_CREDENTIALS);
 
         bool isValidPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.HashPassword);
 
         if (!isValidPassword)
-            return ResultResponse<LoginResponse>.Failure(Messages.USER_OR_PASSWORD_INVALID);
-
-        string userToken = GenerateToken(user);
+            return ResultResponse<LoginResponse>.Failure(Messages.INVALID_CREDENTIALS);
 
         LoginResponse response = user.Adapt<LoginResponse>();
-
-        response.Token = userToken;
+        response.Token = GenerateToken(user);
 
         return ResultResponse<LoginResponse>.Success(response, Messages.LOGIN_SUCCESSFULLY);
     }

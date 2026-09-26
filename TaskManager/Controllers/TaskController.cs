@@ -38,9 +38,6 @@ public class TaskController : ControllerBase
     {
         var result = await _taskService.GetPagedAsync(request);
 
-        if (!result.IsSuccess)
-            return NotFound(result);
-
         return Ok(result);
     }
 
@@ -51,7 +48,7 @@ public class TaskController : ControllerBase
         var result = await _taskService.CreateTaskAsync(request);
 
         if (!result.IsSuccess)
-            return NotFound(result);
+            return BadRequest(result);
 
         return Ok(result);
     }
@@ -86,9 +83,6 @@ public class TaskController : ControllerBase
     {
         var result = await _taskService.GetSelectablesAsync();
 
-        if (!result.IsSuccess)
-            return NotFound(result);
-
         return Ok(result);
     }
 
@@ -98,9 +92,6 @@ public class TaskController : ControllerBase
     public async Task<IActionResult> GetReportAsync([FromQuery] ReportPagedParams reportParams)
     {
         var result = await _taskService.GetReportAsync(reportParams);
-
-        if (!result.IsSuccess)
-            return NotFound(result);
 
         return Ok(result);
     }

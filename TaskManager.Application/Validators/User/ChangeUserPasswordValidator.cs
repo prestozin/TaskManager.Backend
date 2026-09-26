@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using TaskManager.Application.DTOs.User.Request;
+using TaskManager.Core.Constants;
 
 
 namespace TaskManager.Application.Validators.User;
@@ -7,9 +9,16 @@ public class ChangeUserPasswordValidator : AbstractValidator<ChangeUserPasswordR
 {
     public ChangeUserPasswordValidator()
     {
-        RuleFor(x => x.NewPassword)
+        RuleFor(x => x.OldPassword)
             .NotEmpty()
-            .MinimumLength(6);
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "senha atual"));
+
+        RuleFor(x => x.NewPassword)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+                .WithMessage(string.Format(Messages.FIELD_REQUIRED, "nova senha"))
+            .Matches(Constants.PASSWORD_REGEX)
+                .WithMessage(Messages.PASSWORD_RULES);
     }
 
 }

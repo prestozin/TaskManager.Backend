@@ -1,4 +1,4 @@
-﻿namespace TaskManager.Application.Validators.User;
+﻿namespace TaskManager.Application.DTOs.User.Request;
 
 public class ChangeUserPasswordRequest
 {
