@@ -41,3 +41,11 @@ jobs:
 
           print(f"Line coverage: {line_rate:.2f}%")
           print(f"Branch coverage: {branch_rate:.2f}%")
+          print("Class coverage:")
+          classes = []
+          for class_element in root.findall(".//class"):
+              filename = class_element.attrib.get("filename", "")
+              rate = float(class_element.attrib.get("line-rate", 0)) * 100
+              classes.append((rate, filename))
+          for rate, filename in sorted(classes):
+              print(f"{rate:6.2f}%  {filename}")
