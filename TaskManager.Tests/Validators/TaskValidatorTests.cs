@@ -239,4 +239,57 @@ public class TaskValidatorTests
 
         Assert.False(result.IsValid);
     }
+    [Fact]
+    public void ShouldPassValidation_WhenReportPagedParamsAreValid()
+    {
+        ReportPagedParamsValidator validator = new ReportPagedParamsValidator();
+
+        ReportPagedParams request = new ReportPagedParams
+        {
+            PageNumber = 1,
+            PageSize = 10,
+            StartDate = new DateTime(2026, 9, 1),
+            EndDate = new DateTime(2026, 9, 30)
+        };
+
+        var result = validator.Validate(request);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0, 10)]
+    [InlineData(1, 0)]
+    [InlineData(1, 101)]
+    public void ShouldFailValidation_WhenReportPaginationIsInvalid(int pageNumber, int pageSize)
+    {
+        ReportPagedParamsValidator validator = new ReportPagedParamsValidator();
+
+        ReportPagedParams request = new ReportPagedParams
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var result = validator.Validate(request);
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void ShouldFailValidation_WhenReportDateRangeIsInvalid()
+    {
+        ReportPagedParamsValidator validator = new ReportPagedParamsValidator();
+
+        ReportPagedParams request = new ReportPagedParams
+        {
+            StartDate = new DateTime(2026, 9, 30),
+            EndDate = new DateTime(2026, 9, 1)
+        };
+
+        var result = validator.Validate(request);
+
+        Assert.False(result.IsValid);
+    }
+
 }
