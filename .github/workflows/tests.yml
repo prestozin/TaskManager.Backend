@@ -3,7 +3,7 @@ name: Tests
 on:
   push:
     branches:
-      - tests/coverage-85
+      - automated-tests
   workflow_dispatch:
 
 jobs:
