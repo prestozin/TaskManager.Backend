@@ -15,8 +15,9 @@ public class CurrentUserContextTests
         {
             User = new ClaimsPrincipal(
                 new ClaimsIdentity(
-                [new Claim(ClaimTypes.NameIdentifier, userId.ToString())],
-                "TestAuthentication"
+                    [new Claim(ClaimTypes.NameIdentifier, userId.ToString())],
+                    "TestAuthentication"
+                )
             )
         };
 
@@ -50,8 +51,9 @@ public class CurrentUserContextTests
         {
             User = new ClaimsPrincipal(
                 new ClaimsIdentity(
-                [new Claim(ClaimTypes.NameIdentifier, "invalid-guid")],
-                "TestAuthentication"
+                    [new Claim(ClaimTypes.NameIdentifier, "invalid-guid")],
+                    "TestAuthentication"
+                )
             )
         };
 
