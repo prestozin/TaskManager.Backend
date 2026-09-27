@@ -247,11 +247,11 @@ public class TaskServiceTests
         Assert.True(result.IsSuccess);
         Assert.Equal(3, result.Data!.TotalTasks);
 
-        var pending = Assert.Single(result.Data.Status.Where(item => item.Id == 1));
+        var pending = Assert.Single(result.Data.Status, item => item.Id == 1);
         Assert.Equal(2, pending.Count);
         Assert.Equal(66.67m, pending.Percentage);
 
-        var medium = Assert.Single(result.Data.Priority.Where(item => item.Id == 2));
+        var medium = Assert.Single(result.Data.Priority, item => item.Id == 2);
         Assert.Equal(2, medium.Count);
         Assert.Equal(66.67m, medium.Percentage);
     }
