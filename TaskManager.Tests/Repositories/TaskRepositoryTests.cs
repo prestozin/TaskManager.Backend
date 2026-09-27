@@ -122,6 +122,145 @@ public class TaskRepositoryTests
         Assert.True(await context.Tasks.AnyAsync(task => task.Id == second.Id));
     }
 
+    [Fact]
+    public async Task ShouldCreateTask_WhenCreateTaskIsCalled()
+    {
+        Guid userId = Guid.NewGuid();
+
+        await using ApplicationDbContext context = CreateContext();
+        SeedSelectables(context);
+        await context.SaveChangesAsync();
+
+        TaskRepository repository = new TaskRepository(context);
+        TaskEntity task = CreateTask(Guid.NewGuid(), userId, "Created", 1, 2);
+
+        await repository.CreateTaskAsync(task);
+
+        Assert.True(await context.Tasks.AnyAsync(item => item.Id == task.Id));
+    }
+
+    [Fact]
+    public async Task ShouldReturnOnlyOwnedRequestedTasks_WhenIdsAreProvided()
+    {
+        Guid userId = Guid.NewGuid();
+        Guid otherUserId = Guid.NewGuid();
+
+        await using ApplicationDbContext context = CreateContext();
+        SeedSelectables(context);
+
+        TaskEntity owned = CreateTask(Guid.NewGuid(), userId, "Owned", 1, 1);
+        TaskEntity other = CreateTask(Guid.NewGuid(), otherUserId, "Other", 1, 1);
+
+        context.Tasks.AddRange(owned, other);
+        await context.SaveChangesAsync();
+
+        TaskRepository repository = new TaskRepository(context);
+
+        List<TaskEntity> result = await repository.GetTasksByIdsAsync(
+            [owned.Id, other.Id],
+            userId
+        );
+
+        Assert.Single(result);
+        Assert.Equal(owned.Id, result[0].Id);
+    }
+
+    [Fact]
+    public async Task ShouldPersistTaskChanges_WhenEditTaskIsCalled()
+    {
+        Guid userId = Guid.NewGuid();
+
+        await using ApplicationDbContext context = CreateContext();
+        SeedSelectables(context);
+
+        TaskEntity task = CreateTask(Guid.NewGuid(), userId, "Old title", 1, 1);
+        context.Tasks.Add(task);
+        await context.SaveChangesAsync();
+
+        TaskRepository repository = new TaskRepository(context);
+
+        task.Title = "New title";
+        await repository.EditTaskAsync(task);
+
+        Assert.Equal(
+            "New title",
+            (await context.Tasks.SingleAsync(item => item.Id == task.Id)).Title
+        );
+    }
+
+    [Fact]
+    public async Task ShouldReturnStatusesAndPriorities_WhenSelectablesAreRequested()
+    {
+        await using ApplicationDbContext context = CreateContext();
+        SeedSelectables(context);
+        await context.SaveChangesAsync();
+
+        TaskRepository repository = new TaskRepository(context);
+
+        var statuses = await repository.GetTaskStatusesAsync();
+        var priorities = await repository.GetTaskPrioritiesAsync();
+
+        Assert.Equal(2, statuses.Count);
+        Assert.Equal(3, priorities.Count);
+    }
+
+    [Fact]
+    public async Task ShouldReturnFilteredOwnedTasks_WhenReportIsRequested()
+    {
+        Guid userId = Guid.NewGuid();
+        Guid otherUserId = Guid.NewGuid();
+
+        await using ApplicationDbContext context = CreateContext();
+        SeedSelectables(context);
+
+        context.Tasks.AddRange(
+            CreateTask(Guid.NewGuid(), userId, "Inside", 1, 1, new DateTime(2026, 9, 10)),
+            CreateTask(Guid.NewGuid(), userId, "Outside", 1, 1, new DateTime(2026, 8, 10)),
+            CreateTask(Guid.NewGuid(), otherUserId, "Other user", 1, 1, new DateTime(2026, 9, 10))
+        );
+
+        await context.SaveChangesAsync();
+
+        TaskRepository repository = new TaskRepository(context);
+
+        var result = (await repository.GetReportAsync(
+            userId,
+            new ReportPagedParams
+            {
+                StartDate = new DateTime(2026, 9, 1),
+                EndDate = new DateTime(2026, 10, 1)
+            }
+        )).ToList();
+
+        Assert.Single(result);
+        Assert.Equal("Inside", result[0].Title);
+    }
+
+    [Fact]
+    public async Task ShouldSearchDescription_WhenTitleDoesNotMatch()
+    {
+        Guid userId = Guid.NewGuid();
+
+        await using ApplicationDbContext context = CreateContext();
+        SeedSelectables(context);
+
+        TaskEntity task = CreateTask(Guid.NewGuid(), userId, "Different title", 1, 1);
+        task.Description = "contains special term";
+
+        context.Tasks.Add(task);
+        await context.SaveChangesAsync();
+
+        TaskRepository repository = new TaskRepository(context);
+
+        var (tasks, totalCount) = await repository.GetPagedAsync(
+            userId,
+            new TaskPagedParams { Search = "special" }
+        );
+
+        Assert.Equal(1, totalCount);
+        Assert.Single(tasks);
+    }
+
     private static ApplicationDbContext CreateContext()
     {
         DbContextOptions<ApplicationDbContext> options =
