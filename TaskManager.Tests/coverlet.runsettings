@@ -6,7 +6,7 @@
         <Configuration>
           <Format>cobertura</Format>
           <Exclude>[TaskManager.Tests]*</Exclude>
-          <ExcludeByFile>**/Migrations/**;**/obj/**</ExcludeByFile>
+          <ExcludeByFile>**/Migrations/*.cs,**/Migrations/**/*.cs,**/obj/*.cs,**/obj/**/*.cs</ExcludeByFile>
         </Configuration>
       </DataCollector>
     </DataCollectors>
