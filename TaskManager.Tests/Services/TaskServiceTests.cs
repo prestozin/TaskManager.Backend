@@ -256,6 +256,71 @@ public class TaskServiceTests
         Assert.Equal(66.67m, medium.Percentage);
     }
 
+    [Fact]
+    public async Task ShouldReturnSelectables_WhenStatusesAndPrioritiesExist()
+    {
+        SetupSelectables();
+
+        TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
+
+        var result = await service.GetSelectablesAsync();
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+        Assert.Equal(2, result.Data!.Status!.Count);
+        Assert.Equal(3, result.Data.Priority!.Count);
+    }
+
+    [Fact]
+    public async Task ShouldReturnZeroPercentage_WhenReportHasNoTasks()
+    {
+        _taskRepository
+            .Setup(repository => repository.GetReportAsync(_userId, It.IsAny<ReportPagedParams>()))
+            .ReturnsAsync([]);
+
+        _taskRepository
+            .Setup(repository => repository.GetPagedAsync(_userId, It.IsAny<TaskPagedParams>()))
+            .ReturnsAsync((Enumerable.Empty<TaskEntity>(), 0));
+
+        TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
+
+        var result = await service.GetReportAsync(new ReportPagedParams
+        {
+            PageNumber = 1,
+            PageSize = 10
+        });
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, result.Data!.TotalTasks);
+        Assert.Empty(result.Data.Status);
+        Assert.Empty(result.Data.Priority);
+    }
+
+    [Fact]
+    public async Task ShouldReturnFailure_WhenTaskDoesNotExistForEdit()
+    {
+        SetupSelectables();
+
+        Guid taskId = Guid.NewGuid();
+
+        _taskRepository
+            .Setup(repository => repository.GetTaskByIdAsync(taskId, _userId))
+            .ReturnsAsync((TaskEntity?)null);
+
+        TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
+
+        var result = await service.EditTaskAsync(new EditTaskRequest
+        {
+            Id = taskId,
+            Title = "Task",
+            StatusId = 1,
+            PriorityId = 1
+        });
+
+        Assert.False(result.IsSuccess);
+        _taskRepository.Verify(repository => repository.EditTaskAsync(It.IsAny<TaskEntity>()), Times.Never);
+    }
+
     private void SetupSelectables()
     {
         _taskRepository
