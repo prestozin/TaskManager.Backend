@@ -1,0 +1,51 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - tests/coverage-85
+  workflow_dispatch:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore test project
+        run: dotnet restore TaskManager.Tests/TaskManager.Tests.csproj
+
+      - name: Run tests with coverage
+        run: dotnet test TaskManager.Tests/TaskManager.Tests.csproj --no-restore --collect:"XPlat Code Coverage" --settings TaskManager.Tests/coverlet.runsettings
+
+      - name: Show coverage summary
+        shell: python
+        run: |
+          import glob
+          import xml.etree.ElementTree as ET
+
+          reports = glob.glob("TaskManager.Tests/TestResults/**/coverage.cobertura.xml", recursive=True)
+          if not reports:
+              raise SystemExit("Coverage report not found.")
+
+          root = ET.parse(reports[0]).getroot()
+          line_rate = float(root.attrib.get("line-rate", 0)) * 100
+          branch_rate = float(root.attrib.get("branch-rate", 0)) * 100
+
+          print(f"Line coverage: {line_rate:.2f}%")
+          print(f"Branch coverage: {branch_rate:.2f}%")
+          print("Class coverage:")
+          classes = []
+          for class_element in root.findall(".//class"):
+              filename = class_element.attrib.get("filename", "")
+              rate = float(class_element.attrib.get("line-rate", 0)) * 100
+              classes.append((rate, filename))
+          for rate, filename in sorted(classes):
+              print(f"{rate:6.2f}%  {filename}")
