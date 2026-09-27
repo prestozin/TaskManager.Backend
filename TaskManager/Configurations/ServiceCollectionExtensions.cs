@@ -2,6 +2,8 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using System.Threading.RateLimiting;
+using TaskManager.Application.DTOs;
 using TaskManager.Core.Constants;
 
 namespace TaskManager.Api.Configurations;
@@ -35,7 +37,8 @@ public static class ServiceCollectionExtensions
 
                         ValidAudience = audience,
 
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                        ClockSkew = TimeSpan.Zero
                     };
             });
 
@@ -61,6 +64,37 @@ public static class ServiceCollectionExtensions
             {
                 [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddRateLimitConfiguration(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.AddPolicy("Auth", httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress ?.ToString() ?? "unknown",
+
+                    factory: _ =>
+                        new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 10,
+                            Window = TimeSpan.FromHours(1),
+                            QueueLimit = 0,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            AutoReplenishment = true
+                        }
+                )
+            );
+            options.OnRejected = async (context, cancellationToken) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    await context.HttpContext.Response.WriteAsJsonAsync(ResultResponse<object>.Failure(Messages.TOO_MANY_REQUESTS),cancellationToken);
+                };
         });
 
         return services;

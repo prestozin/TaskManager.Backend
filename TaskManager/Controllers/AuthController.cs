@@ -1,6 +1,7 @@
-﻿using TaskManager.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskManager.Application.DTOs.Auth.Request;
+using TaskManager.Application.Interfaces;
 
 namespace TaskManager.Api.Controllers;
 
@@ -27,6 +28,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [EnableRateLimiting("Auth")]
     [HttpPost("Login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest dto)
     {

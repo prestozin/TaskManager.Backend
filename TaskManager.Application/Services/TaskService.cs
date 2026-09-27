@@ -116,28 +116,19 @@ public class TaskService : ITaskService
         DeleteTaskValidator validator = new DeleteTaskValidator();
         await validator.ValidateAndThrowAsync(request);
 
-        List<TaskEntity> deletedTasks = [];
+        List<TaskEntity> tasks = await _taskRepository.GetTasksByIdsAsync(request.TaskId!, UserId);
 
-        foreach (Guid taskId in request.TaskId)
-        {
-            TaskEntity? task = await _taskRepository.GetTaskByIdAsync(taskId, UserId);
+        if (tasks.Count == 0)
+            return ResultResponse<string>.Failure(string.Format(Messages.RESOURCE_NOT_FOUND, "as tarefas"));     
 
-            if (task == null) 
-                continue;
+        await _taskRepository.DeleteTasksAsync(tasks);
 
-            await _taskRepository.DeleteTaskAsync(task);
-            deletedTasks.Add(task);
-        }
-
-        if (deletedTasks.Count == 0)
-            return ResultResponse<string>.Failure(string.Format(Messages.RESOURCE_NOT_FOUND, "as tarefas"));
-
-        int notFoundCount = request.TaskId!.Count - deletedTasks.Count;
+        int notFoundCount = request.TaskId!.Count - tasks.Count;
 
         if (notFoundCount > 0)
-            return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_PARTIALLY, deletedTasks.Count, notFoundCount));
+            return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_PARTIALLY, tasks.Count, notFoundCount));    
 
-        return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_SUCCESSFULLY, deletedTasks.Count));
+        return ResultResponse<string>.Success(string.Format(Messages.TASKS_DELETED_SUCCESSFULLY, tasks.Count));
     }
 
     public async Task<ResultResponse<TaskSelectablesResponse>> GetSelectablesAsync()

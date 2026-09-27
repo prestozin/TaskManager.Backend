@@ -23,7 +23,7 @@ public class BaseTaskValidator<T> : AbstractValidator<T> where T : BaseTaskReque
             .Cascade(CascadeMode.Stop)
             .NotNull()
                 .WithMessage(string.Format(Messages.FIELD_REQUIRED, "status"))
-            .Must(statusId => statusId.HasValue &&statusIds.Contains(statusId.Value))
+            .Must(statusId => statusId.HasValue && statusIds.Contains(statusId.Value))
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
 
         RuleFor(x => x.PriorityId)

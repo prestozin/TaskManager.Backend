@@ -26,7 +26,7 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "direção da ordenação"));
 
         RuleFor(x => x.TaskStatusId)
-            .Must(statusId =>! statusId.HasValue || statusIds.Contains(statusId.Value))
+            .Must(statusId => !statusId.HasValue || statusIds.Contains(statusId.Value))
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
 
         RuleFor(x => x.TaskPriorityId)
