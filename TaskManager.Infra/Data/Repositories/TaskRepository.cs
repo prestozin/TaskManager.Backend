@@ -14,7 +14,7 @@ public class TaskRepository : BaseRepository<TaskEntity>, ITaskRepository
         _context = context;
     }
 
-    public async Task<TaskEntity?> GetTaskByIdAsync(Guid? taskId, Guid? userId)
+    public async Task<TaskEntity?> GetTaskByIdAsync(Guid? taskId, Guid userId)
     {
         return await _context.Tasks
             .Include(t => t.TaskStatus)

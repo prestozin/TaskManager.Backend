@@ -7,7 +7,7 @@ namespace TaskManager.Application.Validators;
 
 public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
 {
-    public TaskPagedParamsValidator(List<int> statusIds, List<int> priorityIds)
+    public TaskPagedParamsValidator()
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
@@ -25,13 +25,13 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
             .Must(IsValidOrder)
                 .WithMessage(string.Format(Messages.FIELD_INVALID, "direção da ordenação"));
 
-        RuleFor(x => x.TaskStatusId)
-            .Must(statusId => !statusId.HasValue || statusIds.Contains(statusId.Value))
-                .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
+        //RuleFor(x => x.TaskStatusId)
+        //    .Must(statusId => !statusId.HasValue || statusIds.Contains(statusId.Value))
+        //        .WithMessage(string.Format(Messages.FIELD_INVALID, "status"));
 
-        RuleFor(x => x.TaskPriorityId)
-            .Must(priorityId => !priorityId.HasValue || priorityIds.Contains(priorityId.Value))
-                .WithMessage(string.Format(Messages.FIELD_INVALID, "prioridade"));
+        //RuleFor(x => x.TaskPriorityId)
+        //    .Must(priorityId => !priorityId.HasValue || priorityIds.Contains(priorityId.Value))
+        //        .WithMessage(string.Format(Messages.FIELD_INVALID, "prioridade"));
 
         RuleFor(x => x.Search)
             .MaximumLength(Constants.TASK_SEARCH_MAX_LENGTH)
@@ -47,7 +47,7 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
         if (string.IsNullOrWhiteSpace(sort))
             return false;
 
-        return Enum.TryParse<ETaskSort>(sort, true, out _);
+        return Enum.TryParse(sort,true, out ETaskSort taskSort) && Enum.IsDefined(taskSort);
     }
 
     private static bool IsValidOrder(string? order)
@@ -55,7 +55,7 @@ public class TaskPagedParamsValidator : AbstractValidator<TaskPagedParams>
         if (string.IsNullOrWhiteSpace(order))
             return false;
 
-        return Enum.TryParse<ESortOrder>(order, true, out _);
+        return Enum.TryParse(order, true, out ESortOrder sortOrder) && Enum.IsDefined(sortOrder);
     }
 
     private static bool HasValidDateRange(TaskPagedParams request)

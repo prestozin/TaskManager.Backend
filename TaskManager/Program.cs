@@ -46,6 +46,8 @@ app.UseCors("Angular");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseRateLimiter();
+
 if (!app.Environment.IsProduction())
 {
     app.UseSwagger();

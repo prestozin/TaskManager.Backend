@@ -16,7 +16,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-
+    [EnableRateLimiting("Auth")]
     [HttpPost("Register")]
     public async Task<IActionResult> CreateUserAsync(CreateUserRequest dto)
     {
