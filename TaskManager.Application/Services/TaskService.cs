@@ -45,8 +45,6 @@ public class TaskService : ITaskService
 
     public async Task<ResultResponse<PagedResultDto<TaskResponse>>> GetPagedAsync(TaskPagedParams pagedParams)
     {
-        var (statusIds, priorityIds) = await GetSelectableIdsAsync();
-
         TaskPagedParamsValidator validator = new TaskPagedParamsValidator();
         await validator.ValidateAndThrowAsync(pagedParams);
 
