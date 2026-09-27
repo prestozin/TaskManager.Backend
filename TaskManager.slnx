@@ -7,4 +7,7 @@
     <Project Path="TaskManager.Infra/TaskManager.Infra.csproj" />
     <Project Path="TaskManager/TaskManager.Api.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="TaskManager.Tests/TaskManager.Tests.csproj" />
+  </Folder>
 </Solution>
