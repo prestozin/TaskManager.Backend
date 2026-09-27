@@ -83,7 +83,7 @@ public static class ServiceCollectionExtensions
                         new FixedWindowRateLimiterOptions
                         {
                             PermitLimit = 10,
-                            Window = TimeSpan.FromHours(1),
+                            Window = TimeSpan.FromMinutes(15),
                             QueueLimit = 0,
                             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                             AutoReplenishment = true

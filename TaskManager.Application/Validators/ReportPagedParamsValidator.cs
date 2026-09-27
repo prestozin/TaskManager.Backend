@@ -10,7 +10,7 @@ public class ReportPagedParamsValidator : AbstractValidator<ReportPagedParams>
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
-                .WithMessage(string.Format(Messages.FIELD_MINIMUM_VALUE, "página", "1"));
+                .WithMessage(string.Format(Messages.FIELD_MINIMUM_VALUE, "página", 1));
 
         RuleFor(x => x.PageSize)
             .InclusiveBetween(Constants.MIN_PAGE_SIZE, Constants.MAX_PAGE_SIZE)
