@@ -30,4 +30,8 @@
     <ProjectReference Include="..\TaskManager.Infra\TaskManager.Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
 </Project>
