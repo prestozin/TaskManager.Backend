@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TaskManager.Api.Configurations;
-using TaskManager.Application.DTOs;
 
 namespace TaskManager.Tests.Configurations;
 
@@ -28,11 +27,14 @@ public class ApiExceptionHandlerTests
 
         bool handled = await handler.TryHandleAsync(context, exception, CancellationToken.None);
 
-        ResultResponse<object>? response = await ReadResponse(context);
+        using JsonDocument response = await ReadResponse(context);
+        JsonElement errors = response.RootElement.GetProperty("errors");
 
         Assert.True(handled);
         Assert.Equal(StatusCodes.Status400BadRequest, context.Response.StatusCode);
-        Assert.Equal(["Required", "Invalid"], response!.Errors);
+        Assert.Equal(2, errors.GetArrayLength());
+        Assert.Equal("Required", errors[0].GetString());
+        Assert.Equal("Invalid", errors[1].GetString());
     }
 
     [Fact]
@@ -47,11 +49,11 @@ public class ApiExceptionHandlerTests
             CancellationToken.None
         );
 
-        ResultResponse<object>? response = await ReadResponse(context);
+        using JsonDocument response = await ReadResponse(context);
 
         Assert.True(handled);
         Assert.Equal(StatusCodes.Status401Unauthorized, context.Response.StatusCode);
-        Assert.False(response!.IsSuccess);
+        Assert.False(response.RootElement.GetProperty("isSuccess").GetBoolean());
     }
 
     [Fact]
@@ -66,11 +68,11 @@ public class ApiExceptionHandlerTests
             CancellationToken.None
         );
 
-        ResultResponse<object>? response = await ReadResponse(context);
+        using JsonDocument response = await ReadResponse(context);
 
         Assert.True(handled);
         Assert.Equal(StatusCodes.Status500InternalServerError, context.Response.StatusCode);
-        Assert.False(response!.IsSuccess);
+        Assert.False(response.RootElement.GetProperty("isSuccess").GetBoolean());
     }
 
     private static DefaultHttpContext CreateContext()
@@ -81,13 +83,10 @@ public class ApiExceptionHandlerTests
         return context;
     }
 
-    private static async Task<ResultResponse<object>?> ReadResponse(DefaultHttpContext context)
+    private static async Task<JsonDocument> ReadResponse(DefaultHttpContext context)
     {
         context.Response.Body.Position = 0;
 
-        return await JsonSerializer.DeserializeAsync<ResultResponse<object>>(
-            context.Response.Body,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-        );
+        return await JsonDocument.ParseAsync(context.Response.Body);
     }
 }
