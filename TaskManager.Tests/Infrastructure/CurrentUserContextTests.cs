@@ -49,7 +49,7 @@ public class CurrentUserContextTests
         CurrentUserContext context = new CurrentUserContext(accessor);
 
         // Act
-        TestDelegate action = () => _ = context.UserId;
+        Action action = () => _ = context.UserId;
 
         // Assert
         Assert.Throws<UnauthorizedAccessException>(action);
@@ -77,7 +77,7 @@ public class CurrentUserContextTests
         CurrentUserContext context = new CurrentUserContext(accessor);
 
         // Act
-        TestDelegate action = () => _ = context.UserId;
+        Action action = () => _ = context.UserId;
 
         // Assert
         Assert.Throws<UnauthorizedAccessException>(action);
