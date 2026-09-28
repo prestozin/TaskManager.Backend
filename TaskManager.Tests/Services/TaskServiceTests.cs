@@ -10,6 +10,7 @@ using TaskStatusEntity = TaskManager.Core.Entities.TaskStatus;
 
 namespace TaskManager.Tests.Services;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class TaskServiceTests
 {
     private readonly Guid _userId = Guid.NewGuid();
@@ -28,23 +29,27 @@ public class TaskServiceTests
             .Returns(_userId);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenTaskIdIsEmpty()
     {
+        // Arrange
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetTaskByIdAsync(Guid.Empty);
 
-        Assert.False(result.IsSuccess);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
         _taskRepository.Verify(
             repository => repository.GetTaskByIdAsync(It.IsAny<Guid?>(), It.IsAny<Guid>()),
             Times.Never
         );
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenTaskDoesNotExist()
     {
+        // Arrange
         Guid taskId = Guid.NewGuid();
 
         _taskRepository
@@ -53,14 +58,17 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetTaskByIdAsync(taskId);
 
-        Assert.False(result.IsSuccess);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnTask_WhenTaskExists()
     {
+        // Arrange
         Guid taskId = Guid.NewGuid();
 
         TaskEntity task = CreateTask(taskId, _userId, 1, 2);
@@ -71,17 +79,20 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetTaskByIdAsync(taskId);
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal(taskId, result.Data!.Id);
-        Assert.Equal("Pendente", result.Data.Status);
-        Assert.Equal("Média", result.Data.Priority);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data!.Id, Is.EqualTo(taskId));
+        Assert.That(result.Data.Status, Is.EqualTo("Pendente"));
+        Assert.That(result.Data.Priority, Is.EqualTo("Média"));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldUseCurrentUserAndNormalizeFields_WhenCreateTaskSucceeds()
     {
+        // Arrange
         SetupSelectables();
 
         TaskEntity? createdTask = null;
@@ -93,6 +104,7 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.CreateTaskAsync(new CreateTaskRequest
         {
             Title = "  Task title  ",
@@ -101,16 +113,18 @@ public class TaskServiceTests
             PriorityId = 2
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(createdTask);
-        Assert.Equal(_userId, createdTask!.UserId);
-        Assert.Equal("Task title", createdTask.Title);
-        Assert.Null(createdTask.Description);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(createdTask, Is.Not.Null);
+        Assert.That(createdTask!.UserId, Is.EqualTo(_userId));
+        Assert.That(createdTask.Title, Is.EqualTo("Task title"));
+        Assert.That(createdTask.Description, Is.Null);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldUpdateExistingTask_WhenEditTaskSucceeds()
     {
+        // Arrange
         SetupSelectables();
 
         Guid taskId = Guid.NewGuid();
@@ -126,6 +140,7 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.EditTaskAsync(new EditTaskRequest
         {
             Id = taskId,
@@ -135,18 +150,20 @@ public class TaskServiceTests
             PriorityId = 3
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal(taskId, task.Id);
-        Assert.Equal("Updated title", task.Title);
-        Assert.Equal("Updated description", task.Description);
-        Assert.Equal(2, task.StatusId);
-        Assert.Equal(3, task.PriorityId);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(task.Id, Is.EqualTo(taskId));
+        Assert.That(task.Title, Is.EqualTo("Updated title"));
+        Assert.That(task.Description, Is.EqualTo("Updated description"));
+        Assert.That(task.StatusId, Is.EqualTo(2));
+        Assert.That(task.PriorityId, Is.EqualTo(3));
         _taskRepository.Verify(repository => repository.EditTaskAsync(task), Times.Once);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenNoTaskIsFoundForDelete()
     {
+        // Arrange
         Guid taskId = Guid.NewGuid();
 
         _taskRepository
@@ -155,18 +172,21 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.DeleteTaskAsync(new DeleteTaskRequest
         {
             TaskId = [taskId]
         });
 
-        Assert.False(result.IsSuccess);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
         _taskRepository.Verify(repository => repository.DeleteTasksAsync(It.IsAny<List<TaskEntity>>()), Times.Never);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnPartialSuccess_WhenSomeTasksAreNotFoundForDelete()
     {
+        // Arrange
         Guid existingId = Guid.NewGuid();
         Guid missingId = Guid.NewGuid();
 
@@ -185,19 +205,22 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.DeleteTaskAsync(new DeleteTaskRequest
         {
             TaskId = [existingId, missingId]
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.Contains("1 tarefa(s) excluída(s)", result.Message);
-        Assert.Contains("1 tarefa(s) não encontrada(s)", result.Message);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Message, Does.Contain("1 tarefa(s) excluída(s)"));
+        Assert.That(result.Message, Does.Contain("1 tarefa(s) não encontrada(s)"));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnPagedTasks_WhenPagedQuerySucceeds()
     {
+        // Arrange
         TaskEntity task = CreateTask(Guid.NewGuid(), _userId, 1, 1);
 
         _taskRepository
@@ -206,22 +229,25 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetPagedAsync(new TaskPagedParams
         {
             PageNumber = 2,
             PageSize = 10
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal(12, result.Data!.TotalCount);
-        Assert.Equal(2, result.Data.PageNumber);
-        Assert.Equal(2, result.Data.TotalPages);
-        Assert.Single(result.Data.Items!);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data!.TotalCount, Is.EqualTo(12));
+        Assert.That(result.Data.PageNumber, Is.EqualTo(2));
+        Assert.That(result.Data.TotalPages, Is.EqualTo(2));
+        Assert.That(result.Data.Items!.Count(), Is.EqualTo(1));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldBuildReportCategories_WhenReportContainsTasks()
     {
+        // Arrange
         TaskEntity first = CreateTask(Guid.NewGuid(), _userId, 1, 1);
         TaskEntity second = CreateTask(Guid.NewGuid(), _userId, 1, 2);
         TaskEntity third = CreateTask(Guid.NewGuid(), _userId, 2, 2);
@@ -238,42 +264,48 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetReportAsync(new ReportPagedParams
         {
             PageNumber = 1,
             PageSize = 10
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal(3, result.Data!.TotalTasks);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data!.TotalTasks, Is.EqualTo(3));
 
-        var pending = Assert.Single(result.Data.Status, item => item.Id == 1);
-        Assert.Equal(2, pending.Count);
-        Assert.Equal(66.67m, pending.Percentage);
+        var pending = result.Data.Status.Single(item => item.Id == 1);
+        Assert.That(pending.Count, Is.EqualTo(2));
+        Assert.That(pending.Percentage, Is.EqualTo(66.67m));
 
-        var medium = Assert.Single(result.Data.Priority, item => item.Id == 2);
-        Assert.Equal(2, medium.Count);
-        Assert.Equal(66.67m, medium.Percentage);
+        var medium = result.Data.Priority.Single(item => item.Id == 2);
+        Assert.That(medium.Count, Is.EqualTo(2));
+        Assert.That(medium.Percentage, Is.EqualTo(66.67m));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnSelectables_WhenStatusesAndPrioritiesExist()
     {
+        // Arrange
         SetupSelectables();
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetSelectablesAsync();
 
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-        Assert.Equal(2, result.Data!.Status!.Count);
-        Assert.Equal(3, result.Data.Priority!.Count);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data, Is.Not.Null);
+        Assert.That(result.Data!.Status!.Count, Is.EqualTo(2));
+        Assert.That(result.Data.Priority!.Count, Is.EqualTo(3));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnZeroPercentage_WhenReportHasNoTasks()
     {
+        // Arrange
         _taskRepository
             .Setup(repository => repository.GetReportAsync(_userId, It.IsAny<ReportPagedParams>()))
             .ReturnsAsync([]);
@@ -284,21 +316,24 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.GetReportAsync(new ReportPagedParams
         {
             PageNumber = 1,
             PageSize = 10
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal(0, result.Data!.TotalTasks);
-        Assert.Empty(result.Data.Status);
-        Assert.Empty(result.Data.Priority);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data!.TotalTasks, Is.EqualTo(0));
+        Assert.That(result.Data.Status, Is.Empty);
+        Assert.That(result.Data.Priority, Is.Empty);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenTaskDoesNotExistForEdit()
     {
+        // Arrange
         SetupSelectables();
 
         Guid taskId = Guid.NewGuid();
@@ -309,6 +344,7 @@ public class TaskServiceTests
 
         TaskService service = new TaskService(_taskRepository.Object, _currentUserContext.Object);
 
+        // Act
         var result = await service.EditTaskAsync(new EditTaskRequest
         {
             Id = taskId,
@@ -317,7 +353,8 @@ public class TaskServiceTests
             PriorityId = 1
         });
 
-        Assert.False(result.IsSuccess);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
         _taskRepository.Verify(repository => repository.EditTaskAsync(It.IsAny<TaskEntity>()), Times.Never);
     }
 

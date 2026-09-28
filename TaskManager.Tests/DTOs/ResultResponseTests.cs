@@ -2,45 +2,62 @@ using TaskManager.Application.DTOs;
 
 namespace TaskManager.Tests.DTOs;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class ResultResponseTests
 {
-    [Fact]
+    [Test]
     public void ShouldCreateSuccessWithData_WhenDataIsProvided()
     {
+        // Arrange
+
+        // Act
         var result = ResultResponse<string>.Success("data", "success");
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal("success", result.Message);
-        Assert.Equal("data", result.Data);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Message, Is.EqualTo("success"));
+        Assert.That(result.Data, Is.EqualTo("data"));
     }
 
-    [Fact]
+    [Test]
     public void ShouldCreateSuccessWithoutData_WhenOnlyMessageIsProvided()
     {
+        // Arrange
+
+        // Act
         var result = ResultResponse<string>.Success("success");
 
-        Assert.True(result.IsSuccess);
-        Assert.Equal("success", result.Message);
-        Assert.Null(result.Data);
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Message, Is.EqualTo("success"));
+        Assert.That(result.Data, Is.Null);
     }
 
-    [Fact]
+    [Test]
     public void ShouldCreateFailureWithData_WhenDataIsProvided()
     {
+        // Arrange
+
+        // Act
         var result = ResultResponse<string>.Failure("data", "failure");
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("failure", result.Message);
-        Assert.Equal("data", result.Data);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
+        Assert.That(result.Message, Is.EqualTo("failure"));
+        Assert.That(result.Data, Is.EqualTo("data"));
     }
 
-    [Fact]
+    [Test]
     public void ShouldCreateFailureWithoutData_WhenOnlyMessageIsProvided()
     {
+        // Arrange
+
+        // Act
         var result = ResultResponse<string>.Failure("failure");
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("failure", result.Message);
-        Assert.Null(result.Data);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
+        Assert.That(result.Message, Is.EqualTo("failure"));
+        Assert.That(result.Data, Is.Null);
     }
 }

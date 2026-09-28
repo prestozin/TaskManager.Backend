@@ -5,11 +5,13 @@ using TaskManager.Infra.Data.Repositories;
 
 namespace TaskManager.Tests.Repositories;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class UserRepositoryTests
 {
-    [Fact]
+    [Test]
     public async Task ShouldAddAndFindUser_WhenUserIsCreated()
     {
+        // Arrange
         await using ApplicationDbContext context = CreateContext();
         UserRepository repository = new UserRepository(context);
 
@@ -20,18 +22,21 @@ public class UserRepositoryTests
             HashPassword = "hash"
         };
 
+        // Act
         User created = await repository.AddUserAsync(user);
         User? byId = await repository.GetUserByIdAsync(user.Id);
         User? byEmail = await repository.GetUserByEmailAsync(user.Email);
 
-        Assert.Same(user, created);
-        Assert.Equal(user.Id, byId!.Id);
-        Assert.Equal(user.Id, byEmail!.Id);
+        // Assert
+        Assert.That(created, Is.SameAs(user));
+        Assert.That(byId!.Id, Is.EqualTo(user.Id));
+        Assert.That(byEmail!.Id, Is.EqualTo(user.Id));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnTrue_WhenEmailAlreadyExists()
     {
+        // Arrange
         await using ApplicationDbContext context = CreateContext();
 
         context.Users.Add(new User
@@ -45,13 +50,19 @@ public class UserRepositoryTests
 
         UserRepository repository = new UserRepository(context);
 
-        Assert.True(await repository.UserExistsAsync("mateus@email.com"));
-        Assert.False(await repository.UserExistsAsync("other@email.com"));
+        // Act
+        bool exists = await repository.UserExistsAsync("mateus@email.com");
+        bool otherExists = await repository.UserExistsAsync("other@email.com");
+
+        // Assert
+        Assert.That(exists, Is.True);
+        Assert.That(otherExists, Is.False);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldPersistChanges_WhenUserIsEdited()
     {
+        // Arrange
         await using ApplicationDbContext context = CreateContext();
 
         User user = new User
@@ -67,16 +78,19 @@ public class UserRepositoryTests
         UserRepository repository = new UserRepository(context);
 
         user.Name = "New Name";
+        // Act
         await repository.EditUserByIdAsync(user);
 
         User? saved = await context.Users.SingleOrDefaultAsync(item => item.Id == user.Id);
 
-        Assert.Equal("New Name", saved!.Name);
+        // Assert
+        Assert.That(saved!.Name, Is.EqualTo("New Name"));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldRemoveUser_WhenDeleteUserIsCalled()
     {
+        // Arrange
         await using ApplicationDbContext context = CreateContext();
 
         User user = new User
@@ -91,9 +105,11 @@ public class UserRepositoryTests
 
         UserRepository repository = new UserRepository(context);
 
+        // Act
         await repository.DeleteUserAsync(user);
 
-        Assert.False(await context.Users.AnyAsync(item => item.Id == user.Id));
+        // Assert
+        Assert.That(await context.Users.AnyAsync(item => item.Id == user.Id), Is.False);
     }
 
     private static ApplicationDbContext CreateContext()

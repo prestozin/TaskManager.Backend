@@ -7,6 +7,7 @@ using TaskManager.Core.Interfaces;
 
 namespace TaskManager.Tests.Services;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class AuthServiceTests
 {
     private readonly Mock<IUserRepository> _userRepository = new Mock<IUserRepository>();
@@ -26,15 +27,17 @@ public class AuthServiceTests
             .Build();
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenRegisterEmailAlreadyExists()
     {
+        // Arrange
         _userRepository
             .Setup(repository => repository.UserExistsAsync("user@email.com"))
             .ReturnsAsync(true);
 
         AuthService service = new AuthService(_userRepository.Object, _configuration);
 
+        // Act
         var result = await service.CreateUserAsync(new CreateUserRequest
         {
             Name = "User",
@@ -42,13 +45,15 @@ public class AuthServiceTests
             Password = "Password1!"
         });
 
-        Assert.False(result.IsSuccess);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
         _userRepository.Verify(repository => repository.AddUserAsync(It.IsAny<User>()), Times.Never);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldNormalizeAndHashPassword_WhenRegisterSucceeds()
     {
+        // Arrange
         User? savedUser = null;
 
         _userRepository
@@ -62,6 +67,7 @@ public class AuthServiceTests
 
         AuthService service = new AuthService(_userRepository.Object, _configuration);
 
+        // Act
         var result = await service.CreateUserAsync(new CreateUserRequest
         {
             Name = "  User  ",
@@ -69,36 +75,41 @@ public class AuthServiceTests
             Password = "Password1!"
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(savedUser);
-        Assert.Equal("User", savedUser!.Name);
-        Assert.Equal("user@email.com", savedUser.Email);
-        Assert.NotEqual("Password1!", savedUser.HashPassword);
-        Assert.True(BCrypt.Net.BCrypt.Verify("Password1!", savedUser.HashPassword));
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(savedUser, Is.Not.Null);
+        Assert.That(savedUser!.Name, Is.EqualTo("User"));
+        Assert.That(savedUser.Email, Is.EqualTo("user@email.com"));
+        Assert.That(savedUser.HashPassword, Is.Not.EqualTo("Password1!"));
+        Assert.That(BCrypt.Net.BCrypt.Verify("Password1!", savedUser.HashPassword), Is.True);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenLoginUserDoesNotExist()
     {
+        // Arrange
         _userRepository
             .Setup(repository => repository.GetUserByEmailAsync("user@email.com"))
             .ReturnsAsync((User?)null);
 
         AuthService service = new AuthService(_userRepository.Object, _configuration);
 
+        // Act
         var result = await service.LoginAsync(new LoginRequest
         {
             Email = "USER@EMAIL.COM",
             Password = "Password1!"
         });
 
-        Assert.False(result.IsSuccess);
-        Assert.Null(result.Data);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
+        Assert.That(result.Data, Is.Null);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFailure_WhenLoginPasswordIsInvalid()
     {
+        // Arrange
         User user = new User
         {
             Email = "user@email.com",
@@ -112,18 +123,21 @@ public class AuthServiceTests
 
         AuthService service = new AuthService(_userRepository.Object, _configuration);
 
+        // Act
         var result = await service.LoginAsync(new LoginRequest
         {
             Email = "user@email.com",
             Password = "WrongPassword1!"
         });
 
-        Assert.False(result.IsSuccess);
+        // Assert
+        Assert.That(result.IsSuccess, Is.False);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnToken_WhenLoginCredentialsAreValid()
     {
+        // Arrange
         User user = new User
         {
             Id = Guid.NewGuid(),
@@ -138,14 +152,16 @@ public class AuthServiceTests
 
         AuthService service = new AuthService(_userRepository.Object, _configuration);
 
+        // Act
         var result = await service.LoginAsync(new LoginRequest
         {
             Email = "user@email.com",
             Password = "Password1!"
         });
 
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-        Assert.False(string.IsNullOrWhiteSpace(result.Data!.Token));
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data, Is.Not.Null);
+        Assert.That(string.IsNullOrWhiteSpace(result.Data!.Token), Is.False);
     }
 }

@@ -9,13 +9,15 @@ using TaskManager.Core.Shared;
 
 namespace TaskManager.Tests.Controllers;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class TaskControllerTests
 {
     private readonly Mock<ITaskService> _taskService = new Mock<ITaskService>();
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenTaskExists()
     {
+        // Arrange
         Guid taskId = Guid.NewGuid();
 
         _taskService
@@ -24,14 +26,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.GetByIdAsync(taskId);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnNotFound_WhenTaskDoesNotExist()
     {
+        // Arrange
         Guid taskId = Guid.NewGuid();
 
         _taskService
@@ -40,14 +45,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.GetByIdAsync(taskId);
 
-        Assert.IsType<NotFoundObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenPagedRequestIsProcessed()
     {
+        // Arrange
         TaskPagedParams request = new TaskPagedParams();
 
         _taskService
@@ -58,14 +66,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.GetPagedAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenCreateTaskSucceeds()
     {
+        // Arrange
         CreateTaskRequest request = new CreateTaskRequest();
 
         _taskService
@@ -74,14 +85,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.CreateTaskAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnBadRequest_WhenCreateTaskFails()
     {
+        // Arrange
         CreateTaskRequest request = new CreateTaskRequest();
 
         _taskService
@@ -90,14 +104,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.CreateTaskAsync(request);
 
-        Assert.IsType<BadRequestObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenEditTaskSucceeds()
     {
+        // Arrange
         EditTaskRequest request = new EditTaskRequest();
 
         _taskService
@@ -106,14 +123,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.EditTaskAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnNotFound_WhenEditTaskFails()
     {
+        // Arrange
         EditTaskRequest request = new EditTaskRequest();
 
         _taskService
@@ -122,14 +142,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.EditTaskAsync(request);
 
-        Assert.IsType<NotFoundObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenDeleteTaskSucceeds()
     {
+        // Arrange
         DeleteTaskRequest request = new DeleteTaskRequest { TaskId = [Guid.NewGuid()] };
 
         _taskService
@@ -138,14 +161,17 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.DeleteTaskAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnNotFound_WhenDeleteTaskFails()
     {
+        // Arrange
         DeleteTaskRequest request = new DeleteTaskRequest { TaskId = [Guid.NewGuid()] };
 
         _taskService
@@ -154,28 +180,34 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.DeleteTaskAsync(request);
 
-        Assert.IsType<NotFoundObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenSelectablesAreRequested()
     {
+        // Arrange
         _taskService
             .Setup(service => service.GetSelectablesAsync())
             .ReturnsAsync(ResultResponse<TaskSelectablesResponse>.Success(new TaskSelectablesResponse()));
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.GetSelectablesAsync();
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenReportIsRequested()
     {
+        // Arrange
         ReportPagedParams request = new ReportPagedParams();
 
         _taskService
@@ -184,8 +216,10 @@ public class TaskControllerTests
 
         TaskController controller = new TaskController(_taskService.Object);
 
+        // Act
         var result = await controller.GetReportAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 }

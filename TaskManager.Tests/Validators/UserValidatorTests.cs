@@ -3,11 +3,13 @@ using TaskManager.Application.Validators.User;
 
 namespace TaskManager.Tests.Validators;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class UserValidatorTests
 {
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenEditUserRequestIsValid()
     {
+        // Arrange
         EditUserValidator validator = new EditUserValidator();
 
         EditUserRequest request = new EditUserRequest
@@ -18,16 +20,17 @@ public class UserValidatorTests
             About = "About"
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("ab")]
+    [TestCase("")]
+    [TestCase("ab")]
     public void ShouldFailValidation_WhenEditUserNameIsInvalid(string name)
     {
+        // Arrange
         EditUserValidator validator = new EditUserValidator();
 
         EditUserRequest request = new EditUserRequest
@@ -35,14 +38,17 @@ public class UserValidatorTests
             Name = name
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenEditUserOptionalFieldExceedsMaximumLength()
     {
+        // Arrange
         EditUserValidator validator = new EditUserValidator();
 
         EditUserRequest request = new EditUserRequest
@@ -51,14 +57,17 @@ public class UserValidatorTests
             Role = new string('a', 101)
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenDeleteUserPasswordIsValid()
     {
+        // Arrange
         DeleteUserValidator validator = new DeleteUserValidator();
 
         DeleteUserRequest request = new DeleteUserRequest
@@ -66,14 +75,17 @@ public class UserValidatorTests
             Password = "password"
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenDeleteUserPasswordIsEmpty()
     {
+        // Arrange
         DeleteUserValidator validator = new DeleteUserValidator();
 
         DeleteUserRequest request = new DeleteUserRequest
@@ -81,14 +93,17 @@ public class UserValidatorTests
             Password = ""
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenChangePasswordRequestIsValid()
     {
+        // Arrange
         ChangeUserPasswordValidator validator = new ChangeUserPasswordValidator();
 
         ChangeUserPasswordRequest request = new ChangeUserPasswordRequest
@@ -97,16 +112,17 @@ public class UserValidatorTests
             NewPassword = "NewPassword1!"
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData("", "NewPassword1!")]
-    [InlineData("OldPassword1!", "weak")]
+    [TestCase("", "NewPassword1!")]
+    [TestCase("OldPassword1!", "weak")]
     public void ShouldFailValidation_WhenChangePasswordRequestIsInvalid(string oldPassword, string newPassword)
     {
+        // Arrange
         ChangeUserPasswordValidator validator = new ChangeUserPasswordValidator();
 
         ChangeUserPasswordRequest request = new ChangeUserPasswordRequest
@@ -115,8 +131,10 @@ public class UserValidatorTests
             NewPassword = newPassword
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 }

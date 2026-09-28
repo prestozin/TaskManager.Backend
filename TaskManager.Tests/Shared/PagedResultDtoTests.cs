@@ -2,23 +2,31 @@ using TaskManager.Core.Shared;
 
 namespace TaskManager.Tests.Shared;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class PagedResultDtoTests
 {
-    [Fact]
+    [Test]
     public void ShouldCalculateTotalPages_WhenTotalCountIsNotMultipleOfPageSize()
     {
+        // Arrange
+
+        // Act
         PagedResultDto<int> result = new PagedResultDto<int>([1, 2], 2, 10, 21);
 
-        Assert.Equal(3, result.TotalPages);
-        Assert.Equal(2, result.PageNumber);
-        Assert.Equal(10, result.PageSize);
-        Assert.Equal(21, result.TotalCount);
-        Assert.Equal([1, 2], result.Items);
+        // Assert
+        Assert.That(result.TotalPages, Is.EqualTo(3));
+        Assert.That(result.PageNumber, Is.EqualTo(2));
+        Assert.That(result.PageSize, Is.EqualTo(10));
+        Assert.That(result.TotalCount, Is.EqualTo(21));
+        Assert.That(result.Items, Is.EqualTo(new[] { 1, 2 }));
     }
 
-    [Fact]
+    [Test]
     public void ShouldAllowPropertyAssignment_WhenDefaultConstructorIsUsed()
     {
+        // Arrange
+
+        // Act
         PagedResultDto<int> result = new PagedResultDto<int>
         {
             Items = [1],
@@ -27,6 +35,7 @@ public class PagedResultDtoTests
             TotalCount = 1
         };
 
-        Assert.Equal(1, result.TotalPages);
+        // Assert
+        Assert.That(result.TotalPages, Is.EqualTo(1));
     }
 }

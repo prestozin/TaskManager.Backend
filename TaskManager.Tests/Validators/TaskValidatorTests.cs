@@ -6,14 +6,16 @@ using TaskManager.Core.Shared;
 
 namespace TaskManager.Tests.Validators;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class TaskValidatorTests
 {
     private static readonly List<int> StatusIds = [1, 2, 3, 4];
     private static readonly List<int> PriorityIds = [1, 2, 3];
 
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenCreateTaskRequestIsValid()
     {
+        // Arrange
         CreateTaskValidator validator = new CreateTaskValidator(StatusIds, PriorityIds);
 
         CreateTaskRequest request = new CreateTaskRequest
@@ -24,18 +26,19 @@ public class TaskValidatorTests
             PriorityId = 2
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData("", 1, 1)]
-    [InlineData("ab", 1, 1)]
-    [InlineData("Valid task", 99, 1)]
-    [InlineData("Valid task", 1, 99)]
+    [TestCase("", 1, 1)]
+    [TestCase("ab", 1, 1)]
+    [TestCase("Valid task", 99, 1)]
+    [TestCase("Valid task", 1, 99)]
     public void ShouldFailValidation_WhenCreateTaskRequestIsInvalid(string title, int statusId, int priorityId)
     {
+        // Arrange
         CreateTaskValidator validator = new CreateTaskValidator(StatusIds, PriorityIds);
 
         CreateTaskRequest request = new CreateTaskRequest
@@ -45,14 +48,17 @@ public class TaskValidatorTests
             PriorityId = priorityId
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenDescriptionExceedsMaximumLength()
     {
+        // Arrange
         CreateTaskValidator validator = new CreateTaskValidator(StatusIds, PriorityIds);
 
         CreateTaskRequest request = new CreateTaskRequest
@@ -63,14 +69,17 @@ public class TaskValidatorTests
             PriorityId = 1
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenEditTaskIdIsNull()
     {
+        // Arrange
         EditTaskValidator validator = new EditTaskValidator(StatusIds, PriorityIds);
 
         EditTaskRequest request = new EditTaskRequest
@@ -81,14 +90,18 @@ public class TaskValidatorTests
             PriorityId = 1
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact(Skip = "Known production issue: NotEmpty on Guid? currently accepts Guid.Empty.")]
+    [Test]
+    [Ignore("Known production issue: NotEmpty on Guid? currently accepts Guid.Empty.")]
     public void ShouldFailValidation_WhenEditTaskIdIsEmpty()
     {
+        // Arrange
         EditTaskValidator validator = new EditTaskValidator(StatusIds, PriorityIds);
 
         EditTaskRequest request = new EditTaskRequest
@@ -99,14 +112,17 @@ public class TaskValidatorTests
             PriorityId = 1
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenPagedParamsAreValid()
     {
+        // Arrange
         TaskPagedParamsValidator validator = new TaskPagedParamsValidator();
 
         TaskPagedParams request = new TaskPagedParams
@@ -120,19 +136,20 @@ public class TaskValidatorTests
             EndDate = new DateTime(2026, 9, 30)
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData(0, 10, "CreatedAt", "desc")]
-    [InlineData(1, 0, "CreatedAt", "desc")]
-    [InlineData(1, 101, "CreatedAt", "desc")]
-    [InlineData(1, 10, "Invalid", "desc")]
-    [InlineData(1, 10, "CreatedAt", "invalid")]
+    [TestCase(0, 10, "CreatedAt", "desc")]
+    [TestCase(1, 0, "CreatedAt", "desc")]
+    [TestCase(1, 101, "CreatedAt", "desc")]
+    [TestCase(1, 10, "Invalid", "desc")]
+    [TestCase(1, 10, "CreatedAt", "invalid")]
     public void ShouldFailValidation_WhenPagedParamsAreInvalid(int pageNumber, int pageSize, string sort, string order)
     {
+        // Arrange
         TaskPagedParamsValidator validator = new TaskPagedParamsValidator();
 
         TaskPagedParams request = new TaskPagedParams
@@ -143,14 +160,17 @@ public class TaskValidatorTests
             Order = order
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenPagedDateRangeIsInvalid()
     {
+        // Arrange
         TaskPagedParamsValidator validator = new TaskPagedParamsValidator();
 
         TaskPagedParams request = new TaskPagedParams
@@ -159,14 +179,17 @@ public class TaskValidatorTests
             EndDate = new DateTime(2026, 9, 1)
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenDeleteTaskRequestContainsUniqueValidIds()
     {
+        // Arrange
         DeleteTaskValidator validator = new DeleteTaskValidator();
 
         DeleteTaskRequest request = new DeleteTaskRequest
@@ -174,14 +197,17 @@ public class TaskValidatorTests
             TaskId = [Guid.NewGuid(), Guid.NewGuid()]
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenDeleteTaskRequestIsEmpty()
     {
+        // Arrange
         DeleteTaskValidator validator = new DeleteTaskValidator();
 
         DeleteTaskRequest request = new DeleteTaskRequest
@@ -189,14 +215,17 @@ public class TaskValidatorTests
             TaskId = []
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenDeleteTaskRequestContainsDuplicateIds()
     {
+        // Arrange
         DeleteTaskValidator validator = new DeleteTaskValidator();
         Guid id = Guid.NewGuid();
 
@@ -205,14 +234,17 @@ public class TaskValidatorTests
             TaskId = [id, id]
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenDeleteTaskRequestContainsEmptyGuid()
     {
+        // Arrange
         DeleteTaskValidator validator = new DeleteTaskValidator();
 
         DeleteTaskRequest request = new DeleteTaskRequest
@@ -220,14 +252,17 @@ public class TaskValidatorTests
             TaskId = [Guid.Empty]
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenDeleteTaskRequestExceedsBatchLimit()
     {
+        // Arrange
         DeleteTaskValidator validator = new DeleteTaskValidator();
 
         DeleteTaskRequest request = new DeleteTaskRequest
@@ -235,13 +270,16 @@ public class TaskValidatorTests
             TaskId = Enumerable.Range(0, 101).Select(_ => Guid.NewGuid()).ToList()
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenReportPagedParamsAreValid()
     {
+        // Arrange
         ReportPagedParamsValidator validator = new ReportPagedParamsValidator();
 
         ReportPagedParams request = new ReportPagedParams
@@ -252,17 +290,18 @@ public class TaskValidatorTests
             EndDate = new DateTime(2026, 9, 30)
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData(0, 10)]
-    [InlineData(1, 0)]
-    [InlineData(1, 101)]
+    [TestCase(0, 10)]
+    [TestCase(1, 0)]
+    [TestCase(1, 101)]
     public void ShouldFailValidation_WhenReportPaginationIsInvalid(int pageNumber, int pageSize)
     {
+        // Arrange
         ReportPagedParamsValidator validator = new ReportPagedParamsValidator();
 
         ReportPagedParams request = new ReportPagedParams
@@ -271,14 +310,17 @@ public class TaskValidatorTests
             PageSize = pageSize
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldFailValidation_WhenReportDateRangeIsInvalid()
     {
+        // Arrange
         ReportPagedParamsValidator validator = new ReportPagedParamsValidator();
 
         ReportPagedParams request = new ReportPagedParams
@@ -287,9 +329,11 @@ public class TaskValidatorTests
             EndDate = new DateTime(2026, 9, 1)
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
 }

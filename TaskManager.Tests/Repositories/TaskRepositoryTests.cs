@@ -8,11 +8,13 @@ using TaskStatusEntity = TaskManager.Core.Entities.TaskStatus;
 
 namespace TaskManager.Tests.Repositories;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class TaskRepositoryTests
 {
-    [Fact]
+    [Test]
     public async Task ShouldReturnTask_WhenTaskBelongsToUser()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
         Guid otherUserId = Guid.NewGuid();
         Guid taskId = Guid.NewGuid();
@@ -30,16 +32,19 @@ public class TaskRepositoryTests
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         var result = await repository.GetTaskByIdAsync(taskId, userId);
 
-        Assert.NotNull(result);
-        Assert.Equal(taskId, result!.Id);
-        Assert.Equal(userId, result.UserId);
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result!.Id, Is.EqualTo(taskId));
+        Assert.That(result.UserId, Is.EqualTo(userId));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnNull_WhenTaskBelongsToAnotherUser()
     {
+        // Arrange
         Guid ownerId = Guid.NewGuid();
         Guid requesterId = Guid.NewGuid();
         Guid taskId = Guid.NewGuid();
@@ -52,14 +57,17 @@ public class TaskRepositoryTests
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         var result = await repository.GetTaskByIdAsync(taskId, requesterId);
 
-        Assert.Null(result);
+        // Assert
+        Assert.That(result, Is.Null);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldFilterAndPaginateTasks_WhenPagedQueryIsProvided()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
         Guid otherUserId = Guid.NewGuid();
 
@@ -91,17 +99,20 @@ public class TaskRepositoryTests
             EndDate = new DateTime(2026, 10, 1)
         };
 
+        // Act
         var (tasks, totalCount) = await repository.GetPagedAsync(userId, request);
         List<TaskEntity> result = tasks.ToList();
 
-        Assert.Equal(2, totalCount);
-        Assert.Single(result);
-        Assert.Equal("Alpha task", result[0].Title);
+        // Assert
+        Assert.That(totalCount, Is.EqualTo(2));
+        Assert.That(result.Count(), Is.EqualTo(1));
+        Assert.That(result[0].Title, Is.EqualTo("Alpha task"));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldDeleteOnlyProvidedTasks_WhenDeleteTasksIsCalled()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
 
         await using ApplicationDbContext context = CreateContext();
@@ -116,15 +127,18 @@ public class TaskRepositoryTests
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         await repository.DeleteTasksAsync([first]);
 
-        Assert.False(await context.Tasks.AnyAsync(task => task.Id == first.Id));
-        Assert.True(await context.Tasks.AnyAsync(task => task.Id == second.Id));
+        // Assert
+        Assert.That(await context.Tasks.AnyAsync(task => task.Id == first.Id), Is.False);
+        Assert.That(await context.Tasks.AnyAsync(task => task.Id == second.Id), Is.True);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldCreateTask_WhenCreateTaskIsCalled()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
 
         await using ApplicationDbContext context = CreateContext();
@@ -134,14 +148,17 @@ public class TaskRepositoryTests
         TaskRepository repository = new TaskRepository(context);
         TaskEntity task = CreateTask(Guid.NewGuid(), userId, "Created", 1, 2);
 
+        // Act
         await repository.CreateTaskAsync(task);
 
-        Assert.True(await context.Tasks.AnyAsync(item => item.Id == task.Id));
+        // Assert
+        Assert.That(await context.Tasks.AnyAsync(item => item.Id == task.Id), Is.True);
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOnlyOwnedRequestedTasks_WhenIdsAreProvided()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
         Guid otherUserId = Guid.NewGuid();
 
@@ -156,18 +173,21 @@ public class TaskRepositoryTests
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         List<TaskEntity> result = await repository.GetTasksByIdsAsync(
             [owned.Id, other.Id],
             userId
         );
 
-        Assert.Single(result);
-        Assert.Equal(owned.Id, result[0].Id);
+        // Assert
+        Assert.That(result.Count(), Is.EqualTo(1));
+        Assert.That(result[0].Id, Is.EqualTo(owned.Id));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldPersistTaskChanges_WhenEditTaskIsCalled()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
 
         await using ApplicationDbContext context = CreateContext();
@@ -180,33 +200,36 @@ public class TaskRepositoryTests
         TaskRepository repository = new TaskRepository(context);
 
         task.Title = "New title";
+        // Act
         await repository.EditTaskAsync(task);
 
-        Assert.Equal(
-            "New title",
-            (await context.Tasks.SingleAsync(item => item.Id == task.Id)).Title
-        );
+        // Assert
+        Assert.That((await context.Tasks.SingleAsync(item => item.Id == task.Id)).Title, Is.EqualTo("New title"));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnStatusesAndPriorities_WhenSelectablesAreRequested()
     {
+        // Arrange
         await using ApplicationDbContext context = CreateContext();
         SeedSelectables(context);
         await context.SaveChangesAsync();
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         var statuses = await repository.GetTaskStatusesAsync();
         var priorities = await repository.GetTaskPrioritiesAsync();
 
-        Assert.Equal(2, statuses.Count);
-        Assert.Equal(3, priorities.Count);
+        // Assert
+        Assert.That(statuses.Count, Is.EqualTo(2));
+        Assert.That(priorities.Count, Is.EqualTo(3));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnFilteredOwnedTasks_WhenReportIsRequested()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
         Guid otherUserId = Guid.NewGuid();
 
@@ -223,6 +246,7 @@ public class TaskRepositoryTests
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         var result = (await repository.GetReportAsync(
             userId,
             new ReportPagedParams
@@ -232,13 +256,15 @@ public class TaskRepositoryTests
             }
         )).ToList();
 
-        Assert.Single(result);
-        Assert.Equal("Inside", result[0].Title);
+        // Assert
+        Assert.That(result.Count(), Is.EqualTo(1));
+        Assert.That(result[0].Title, Is.EqualTo("Inside"));
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldSearchDescription_WhenTitleDoesNotMatch()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
 
         await using ApplicationDbContext context = CreateContext();
@@ -252,13 +278,15 @@ public class TaskRepositoryTests
 
         TaskRepository repository = new TaskRepository(context);
 
+        // Act
         var (tasks, totalCount) = await repository.GetPagedAsync(
             userId,
             new TaskPagedParams { Search = "special" }
         );
 
-        Assert.Equal(1, totalCount);
-        Assert.Single(tasks);
+        // Assert
+        Assert.That(totalCount, Is.EqualTo(1));
+        Assert.That(tasks.Count(), Is.EqualTo(1));
     }
 
     private static ApplicationDbContext CreateContext()

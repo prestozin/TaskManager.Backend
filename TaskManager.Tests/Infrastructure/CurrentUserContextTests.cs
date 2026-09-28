@@ -4,11 +4,13 @@ using TaskManager.Infra.Data;
 
 namespace TaskManager.Tests.Infrastructure;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class CurrentUserContextTests
 {
-    [Fact]
+    [Test]
     public void ShouldReturnUserId_WhenNameIdentifierClaimIsValid()
     {
+        // Arrange
         Guid userId = Guid.NewGuid();
 
         DefaultHttpContext httpContext = new DefaultHttpContext
@@ -28,12 +30,17 @@ public class CurrentUserContextTests
 
         CurrentUserContext context = new CurrentUserContext(accessor);
 
-        Assert.Equal(userId, context.UserId);
+        // Act
+        Guid result = context.UserId;
+
+        // Assert
+        Assert.That(result, Is.EqualTo(userId));
     }
 
-    [Fact]
+    [Test]
     public void ShouldThrowUnauthorized_WhenNameIdentifierClaimIsMissing()
     {
+        // Arrange
         HttpContextAccessor accessor = new HttpContextAccessor
         {
             HttpContext = new DefaultHttpContext()
@@ -41,12 +48,17 @@ public class CurrentUserContextTests
 
         CurrentUserContext context = new CurrentUserContext(accessor);
 
-        Assert.Throws<UnauthorizedAccessException>(() => context.UserId);
+        // Act
+        TestDelegate action = () => _ = context.UserId;
+
+        // Assert
+        Assert.Throws<UnauthorizedAccessException>(action);
     }
 
-    [Fact]
+    [Test]
     public void ShouldThrowUnauthorized_WhenNameIdentifierClaimIsInvalid()
     {
+        // Arrange
         DefaultHttpContext httpContext = new DefaultHttpContext
         {
             User = new ClaimsPrincipal(
@@ -64,6 +76,10 @@ public class CurrentUserContextTests
 
         CurrentUserContext context = new CurrentUserContext(accessor);
 
-        Assert.Throws<UnauthorizedAccessException>(() => context.UserId);
+        // Act
+        TestDelegate action = () => _ = context.UserId;
+
+        // Assert
+        Assert.Throws<UnauthorizedAccessException>(action);
     }
 }

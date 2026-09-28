@@ -8,41 +8,49 @@ using TaskManager.Application.Interfaces;
 
 namespace TaskManager.Tests.Controllers;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class UserControllerTests
 {
     private readonly Mock<IUserService> _userService = new Mock<IUserService>();
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenUserExists()
     {
+        // Arrange
         _userService
             .Setup(service => service.GetUserAsync())
             .ReturnsAsync(ResultResponse<UserResponse>.Success(new UserResponse()));
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.GetUserAsync();
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnNotFound_WhenUserDoesNotExist()
     {
+        // Arrange
         _userService
             .Setup(service => service.GetUserAsync())
             .ReturnsAsync(ResultResponse<UserResponse>.Failure("Not found"));
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.GetUserAsync();
 
-        Assert.IsType<NotFoundObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenEditUserSucceeds()
     {
+        // Arrange
         EditUserRequest request = new EditUserRequest();
 
         _userService
@@ -51,14 +59,17 @@ public class UserControllerTests
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.EditUserAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnNotFound_WhenEditUserFails()
     {
+        // Arrange
         EditUserRequest request = new EditUserRequest();
 
         _userService
@@ -67,14 +78,17 @@ public class UserControllerTests
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.EditUserAsync(request);
 
-        Assert.IsType<NotFoundObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenDeleteUserSucceeds()
     {
+        // Arrange
         DeleteUserRequest request = new DeleteUserRequest { Password = "Password1!" };
 
         _userService
@@ -83,14 +97,17 @@ public class UserControllerTests
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.DeleteUserAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnBadRequest_WhenDeleteUserFails()
     {
+        // Arrange
         DeleteUserRequest request = new DeleteUserRequest { Password = "Wrong" };
 
         _userService
@@ -99,14 +116,17 @@ public class UserControllerTests
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.DeleteUserAsync(request);
 
-        Assert.IsType<BadRequestObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenChangePasswordSucceeds()
     {
+        // Arrange
         ChangeUserPasswordRequest request = new ChangeUserPasswordRequest();
 
         _userService
@@ -115,14 +135,17 @@ public class UserControllerTests
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.ChangePasswordAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnBadRequest_WhenChangePasswordFails()
     {
+        // Arrange
         ChangeUserPasswordRequest request = new ChangeUserPasswordRequest();
 
         _userService
@@ -131,8 +154,10 @@ public class UserControllerTests
 
         UserController controller = new UserController(_userService.Object);
 
+        // Act
         var result = await controller.ChangePasswordAsync(request);
 
-        Assert.IsType<BadRequestObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
     }
 }

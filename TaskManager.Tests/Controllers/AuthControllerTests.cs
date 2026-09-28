@@ -8,13 +8,15 @@ using TaskManager.Application.Interfaces;
 
 namespace TaskManager.Tests.Controllers;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class AuthControllerTests
 {
     private readonly Mock<IAuthService> _authService = new Mock<IAuthService>();
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenRegisterSucceeds()
     {
+        // Arrange
         CreateUserRequest request = new CreateUserRequest();
 
         _authService
@@ -23,14 +25,17 @@ public class AuthControllerTests
 
         AuthController controller = new AuthController(_authService.Object);
 
+        // Act
         var result = await controller.CreateUserAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnConflict_WhenRegisterFails()
     {
+        // Arrange
         CreateUserRequest request = new CreateUserRequest();
 
         _authService
@@ -39,14 +44,17 @@ public class AuthControllerTests
 
         AuthController controller = new AuthController(_authService.Object);
 
+        // Act
         var result = await controller.CreateUserAsync(request);
 
-        Assert.IsType<ConflictObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<ConflictObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnOk_WhenLoginSucceeds()
     {
+        // Arrange
         LoginRequest request = new LoginRequest();
 
         _authService
@@ -55,14 +63,17 @@ public class AuthControllerTests
 
         AuthController controller = new AuthController(_authService.Object);
 
+        // Act
         var result = await controller.LoginAsync(request);
 
-        Assert.IsType<OkObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
     }
 
-    [Fact]
+    [Test]
     public async Task ShouldReturnUnauthorized_WhenLoginFails()
     {
+        // Arrange
         LoginRequest request = new LoginRequest();
 
         _authService
@@ -71,8 +82,10 @@ public class AuthControllerTests
 
         AuthController controller = new AuthController(_authService.Object);
 
+        // Act
         var result = await controller.LoginAsync(request);
 
-        Assert.IsType<UnauthorizedObjectResult>(result);
+        // Assert
+        Assert.That(result, Is.TypeOf<UnauthorizedObjectResult>());
     }
 }

@@ -4,11 +4,13 @@ using TaskManager.Application.Validators.Auth;
 
 namespace TaskManager.Tests.Validators;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class AuthValidatorTests
 {
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenCreateUserRequestIsValid()
     {
+        // Arrange
         CreateUserValidator validator = new CreateUserValidator();
 
         CreateUserRequest request = new CreateUserRequest
@@ -18,18 +20,19 @@ public class AuthValidatorTests
             Password = "Password1!"
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData("", "mateus@email.com", "Password1!")]
-    [InlineData("Ma", "mateus@email.com", "Password1!")]
-    [InlineData("Mateus", "invalid-email", "Password1!")]
-    [InlineData("Mateus", "mateus@email.com", "password")]
+    [TestCase("", "mateus@email.com", "Password1!")]
+    [TestCase("Ma", "mateus@email.com", "Password1!")]
+    [TestCase("Mateus", "invalid-email", "Password1!")]
+    [TestCase("Mateus", "mateus@email.com", "password")]
     public void ShouldFailValidation_WhenCreateUserRequestIsInvalid(string name, string email, string password)
     {
+        // Arrange
         CreateUserValidator validator = new CreateUserValidator();
 
         CreateUserRequest request = new CreateUserRequest
@@ -39,14 +42,17 @@ public class AuthValidatorTests
             Password = password
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void ShouldPassValidation_WhenLoginRequestIsValid()
     {
+        // Arrange
         LoginValidator validator = new LoginValidator();
 
         LoginRequest request = new LoginRequest
@@ -55,17 +61,18 @@ public class AuthValidatorTests
             Password = "any-password"
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.True(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.True);
     }
-
-    [Theory]
-    [InlineData("", "password")]
-    [InlineData("invalid-email", "password")]
-    [InlineData("mateus@email.com", "")]
+    [TestCase("", "password")]
+    [TestCase("invalid-email", "password")]
+    [TestCase("mateus@email.com", "")]
     public void ShouldFailValidation_WhenLoginRequestIsInvalid(string email, string password)
     {
+        // Arrange
         LoginValidator validator = new LoginValidator();
 
         LoginRequest request = new LoginRequest
@@ -74,8 +81,10 @@ public class AuthValidatorTests
             Password = password
         };
 
+        // Act
         var result = validator.Validate(request);
 
-        Assert.False(result.IsValid);
+        // Assert
+        Assert.That(result.IsValid, Is.False);
     }
 }
