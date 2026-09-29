@@ -19,21 +19,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddRateLimitConfiguration();
+builder.Services.AddCorsConfiguration(builder.Configuration);
 
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Angular", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
-
 
 TypeAdapterConfig.GlobalSettings.Scan(typeof(TaskMapping).Assembly);
 
@@ -41,12 +30,14 @@ var app = builder.Build();
 app.UseExceptionHandler();
 
 
-app.UseCors("Angular");
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRateLimiter();
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 if (!app.Environment.IsProduction())
 {
