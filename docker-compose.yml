@@ -1,18 +1,30 @@
 services:
 
   database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:17
     container_name: TaskManager-database
 
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "${DB_SA_PASSWORD}"
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
     ports:
-      - "1433:1433"
+      - "5432:5432"
 
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER} -d ${DB_NAME}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 
   api:
     build:
@@ -28,14 +40,15 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
 
-      ConnectionStrings__DefaultConnection: "Server=database,1433;Database=TaskManager;User Id=sa;Password=${DB_SA_PASSWORD};TrustServerCertificate=True"
-      Jwt__Key: "${JWT_KEY}"
+      ConnectionStrings__PostgreSql: "Host=database;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
+
+      Jwt__Key: ${JWT_KEY}
 
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
 
 volumes:
-  sqlserver_data:
-    external: true
-    name: dailymanager_sqlserver_data
+  postgres_data:
+    name: taskmanager_postgres_data
